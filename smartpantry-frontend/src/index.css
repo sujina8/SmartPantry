@@ -37,3 +37,110 @@
   color: #2d6a4f;
   border: 2px solid #2d6a4f;
 }
+
+.inventory-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.inventory-header h2 {
+  color: #2d6a4f;
+}
+
+.btn-add {
+  background-color: #2d6a4f;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.food-form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.food-form input, .food-form select, .food-form textarea {
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.food-form button {
+  background-color: #2d6a4f;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.inventory-table th {
+  background-color: #2d6a4f;
+  color: white;
+  padding: 0.75rem;
+  text-align: left;
+  font-size: 14px;
+}
+
+.inventory-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.expiring-soon {
+  background-color: #fff3cd;
+}
+
+.badge-warning {
+  background-color: #ff9800;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.badge-good {
+  background-color: #4caf50;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.btn-delete {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
