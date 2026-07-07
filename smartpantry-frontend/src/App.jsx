@@ -7,10 +7,13 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Inventory from './pages/Inventory'
+import BrowseDonations from './pages/BrowseDonations'
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth()
+
   if (!user) return <Navigate to="/login" />
+
   return children
 }
 
@@ -18,20 +21,38 @@ function App() {
   return (
     <>
       <Navbar />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/inventory" element={
-          <ProtectedRoute>
-            <Inventory />
-          </ProtectedRoute>
-        } />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/inventory"
+          element={
+            <ProtectedRoute>
+              <Inventory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/donations"
+          element={
+            <ProtectedRoute>
+              <BrowseDonations />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   )
