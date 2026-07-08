@@ -181,3 +181,68 @@
   cursor: pointer;
   font-size: 14px;
 }
+.donations-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.donations-container h2 {
+  color: #2d6a4f;
+  margin-bottom: 1.5rem;
+}
+
+.donations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.donation-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.donation-card h3 {
+  color: #2d6a4f;
+  margin-bottom: 0.5rem;
+}
+
+.donation-card p {
+  font-size: 13px;
+  color: #555;
+}
+
+.badge-available {
+  background-color: #4caf50;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  width: fit-content;
+}
+
+.badge-claimed {
+  background-color: #ff9800;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  width: fit-content;
+}
+
+.btn-claim {
+  background-color: #2d6a4f;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  font-size: 14px;
+}
