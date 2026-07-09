@@ -10,29 +10,42 @@ body {
   color: #333;
 }
 
+.sp-auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.sp-auth-page .sp-nav {
+  position: static;
+}
+
 .auth-container {
-  max-width: 400px;
-  margin: 80px auto;
+  max-width: 600px;
+  margin: 40px auto;
   background: white;
-  padding: 2rem;
+  padding: 3.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  flex: 1;
+  width: 90%;
 }
 
 .auth-container h2 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   color: #2d6a4f;
   text-align: center;
+  font-size: 24px;
 }
 
 .auth-container form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .auth-container input {
-  padding: 0.75rem;
+  padding: 0.875rem;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
@@ -44,7 +57,7 @@ body {
 }
 
 .auth-container button {
-  padding: 0.75rem;
+  padding: 0.875rem;
   background-color: #2d6a4f;
   color: white;
   border: none;
@@ -329,4 +342,394 @@ body {
   cursor: pointer;
   margin-top: 0.5rem;
   font-size: 14px;
+}
+
+/* ============================================
+   SmartPantry — Design tokens (calm palette)
+   ============================================ */
+
+:root {
+  --sp-green: #2d6a4f;        /* reserved mainly for primary CTA */
+  --sp-green-soft: #6f8f7f;   /* icons, small accents, numerals */
+  --sp-ink: #263229;
+  --sp-bg: #faf8f3;           /* warm cream, not stark white */
+  --sp-sage: #eef2ec;
+  --sp-sage-strong: #e3ebe3;
+  --sp-amber: #c9a227;
+  --sp-red: #b5543a;
+  --sp-border: #e7e3d8;
+  --sp-muted: #707a70;
+  --sp-serif: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+}
+
+/* ===== SmartPantry — Home Page ===== */
+
+.sp-home { font-family: 'Inter', system-ui, -apple-system, sans-serif; color: var(--sp-ink); background: var(--sp-bg); }
+.sp-home * { box-sizing: border-box; }
+
+/* --- Freshness bar, signature element --- */
+.sp-freshness-bar { display: flex; height: 3px; width: 44px; border-radius: 2px; overflow: hidden; margin-bottom: 20px; opacity: 0.85; }
+.sp-freshness-bar span { flex: 1; }
+.sp-freshness-bar span:nth-child(1) { background: var(--sp-green); }
+.sp-freshness-bar span:nth-child(2) { background: var(--sp-amber); }
+.sp-freshness-bar span:nth-child(3) { background: var(--sp-red); }
+
+/* --- Nav --- */
+.sp-nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 48px; border-bottom: 1px solid var(--sp-border); background: #fff; position: relative; z-index: 10; }
+.sp-nav-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 19px; letter-spacing: -0.01em; text-decoration: none; color: var(--sp-ink); }
+.sp-nav-logo { width: 32px; height: 32px; }
+.sp-nav-links { display: flex; gap: 36px; list-style: none; margin: 0; padding: 0; }
+.sp-nav-links a { text-decoration: none; color: var(--sp-ink); font-size: 14.5px; font-weight: 500; opacity: 0.65; transition: opacity 0.15s ease; }
+.sp-nav-links a:hover { opacity: 1; }
+.sp-nav-actions { display: flex; gap: 12px; align-items: center; }
+
+/* --- Buttons --- */
+.sp-btn { font-family: inherit; font-size: 14.5px; font-weight: 600; padding: 11px 24px; border-radius: 10px; cursor: pointer; border: 1.5px solid transparent; transition: all 0.18s ease; }
+.sp-btn-primary { background: var(--sp-green); color: #fff; }
+.sp-btn-primary:hover { background: #234f3b; transform: translateY(-1px); }
+.sp-btn-secondary { background: transparent; border-color: var(--sp-border); color: var(--sp-ink); }
+.sp-btn-secondary:hover { border-color: var(--sp-green-soft); background: var(--sp-sage); }
+
+/* --- Hero (centered, single column) --- */
+.sp-hero { position: relative; max-width: 720px; margin: 0 auto; padding: 128px 32px 100px; text-align: center; overflow: hidden; }
+.sp-hero-blob { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); z-index: 0; opacity: 0.7; pointer-events: none; }
+.sp-hero-content { position: relative; z-index: 1; }
+
+.sp-hero h1 { font-size: 46px; line-height: 1.18; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 18px; }
+.sp-hero h1 em { font-family: var(--sp-serif); font-style: italic; font-weight: 400; color: var(--sp-green); }
+
+.sp-hero-sub { font-size: 17px; line-height: 1.65; color: var(--sp-muted); max-width: 440px; margin: 0 auto 36px; }
+
+.sp-hero-quote { position: relative; max-width: 520px; margin: 0 auto 40px; background: var(--sp-sage); border-radius: 16px; padding: 26px 32px 24px; }
+.sp-hero-quote::before { content: '\201C'; position: absolute; top: -6px; left: 18px; font-family: var(--sp-serif); font-size: 56px; color: var(--sp-green-soft); opacity: 0.35; line-height: 1; }
+.sp-hero-quote p { font-family: var(--sp-serif); font-style: italic; font-size: 17.5px; line-height: 1.55; color: var(--sp-ink); margin: 0; }
+.sp-hero-quote span { display: block; margin-top: 10px; font-family: 'Inter', sans-serif; font-style: normal; font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sp-green-soft); }
+
+.sp-hero-actions { display: flex; gap: 14px; justify-content: center; }
+
+/* --- Fade-up entrance, staggered --- */
+@keyframes sp-fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.sp-fade-1, .sp-fade-2, .sp-fade-3, .sp-fade-4 { opacity: 0; animation: sp-fade-up 0.7s ease forwards; }
+.sp-fade-1 { animation-delay: 0.05s; }
+.sp-fade-2 { animation-delay: 0.18s; }
+.sp-fade-3 { animation-delay: 0.31s; }
+.sp-fade-4 { animation-delay: 0.44s; }
+
+/* --- Section shell --- */
+.sp-section { max-width: 1100px; margin: 0 auto; padding: 108px 48px; }
+.sp-section-head { text-align: center; max-width: 540px; margin: 0 auto 56px; display: flex; flex-direction: column; align-items: center; }
+.sp-section-head h2 { font-size: 30px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 12px; }
+.sp-section-head p { color: var(--sp-muted); font-size: 15.5px; line-height: 1.6; margin: 0; }
+
+/* --- Feature cards: shadow instead of border --- */
+.sp-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.sp-feature-card { background: #fff; border-radius: 18px; padding: 32px 28px; box-shadow: 0 1px 2px rgba(38,50,41,0.04), 0 10px 30px rgba(38,50,41,0.05); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.sp-feature-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(38,50,41,0.05), 0 16px 36px rgba(38,50,41,0.08); }
+.sp-feature-icon { width: 42px; height: 42px; border-radius: 50%; background: var(--sp-sage); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+.sp-feature-card h3 { font-size: 16.5px; font-weight: 700; margin: 0 0 8px; }
+.sp-feature-card p { font-size: 14px; color: var(--sp-muted); line-height: 1.6; margin: 0; }
+
+/* --- Steps: no dividers, serif numerals --- */
+.sp-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.sp-step-num { font-family: var(--sp-serif); font-style: italic; font-size: 22px; color: var(--sp-green-soft); display: block; margin-bottom: 14px; }
+.sp-step h3 { font-size: 17px; font-weight: 700; margin: 0 0 8px; }
+.sp-step p { font-size: 14px; color: var(--sp-muted); line-height: 1.6; margin: 0; }
+
+/* --- About --- */
+.sp-about { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.sp-about-visual { background: var(--sp-sage); border-radius: 20px; padding: 32px; min-height: 220px; display: flex; align-items: center; justify-content: center; }
+.sp-about-photo { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; filter: saturate(0.92); }
+.sp-about-text h2 { font-size: 28px; font-weight: 700; margin: 0 0 16px; }
+.sp-about-text p { color: var(--sp-muted); font-size: 15.5px; line-height: 1.7; margin: 0; }
+
+/* --- Contact --- */
+.sp-contact { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 64px; }
+.sp-contact-copy h2 { font-size: 28px; font-weight: 700; margin: 0 0 12px; }
+.sp-contact-copy p { color: var(--sp-muted); font-size: 15.5px; line-height: 1.65; }
+.sp-form-field { margin-bottom: 18px; }
+.sp-form-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.sp-form-field input, .sp-form-field textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--sp-border); border-radius: 10px; font-family: inherit; font-size: 14.5px; background: #fff; color: var(--sp-ink); }
+.sp-form-field input:focus, .sp-form-field textarea:focus { outline: 2px solid var(--sp-green-soft); outline-offset: 1px; border-color: var(--sp-green-soft); }
+.sp-form-field textarea { min-height: 100px; resize: vertical; }
+
+/* --- Footer --- */
+.sp-footer { border-top: 1px solid var(--sp-border); padding: 32px 48px; display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; font-size: 13.5px; color: var(--sp-muted); }
+.sp-footer-links { display: flex; gap: 24px; list-style: none; margin: 0; padding: 0; }
+.sp-footer-links a { color: var(--sp-muted); text-decoration: none; }
+.sp-footer-links a:hover { color: var(--sp-ink); }
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .sp-nav-links { display: none; }
+  .sp-hero { padding: 88px 24px 64px; }
+  .sp-hero h1 { font-size: 34px; }
+  .sp-features { grid-template-columns: 1fr; }
+  .sp-steps { grid-template-columns: 1fr; gap: 32px; }
+  .sp-about { grid-template-columns: 1fr; }
+  .sp-contact { grid-template-columns: 1fr; }
+  .sp-section { padding: 64px 24px; }
+  .sp-footer { flex-direction: column; gap: 16px; padding: 32px 24px; }
+}
+
+/* ===== SmartPantry — Login Page ===== */
+
+.sp-login {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--sp-ink, #1b2e22);
+  background: var(--sp-bg, #fafaf7);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.sp-login * { box-sizing: border-box; }
+
+.sp-login-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 40px 48px;
+  gap: 64px;
+}
+
+.sp-login-intro h1 {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+.sp-login-intro p {
+  color: var(--sp-muted, #5c6b62);
+  font-size: 16px;
+  max-width: 340px;
+  line-height: 1.6;
+}
+
+.sp-login-card {
+  background: #fff;
+  border: 1px solid var(--sp-border, #dce5dd);
+  border-radius: 16px;
+  padding: 40px;
+}
+
+.sp-form-field { margin-bottom: 20px; }
+.sp-form-field label {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.sp-form-field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--sp-border, #dce5dd);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14.5px;
+  background: #fff;
+  color: var(--sp-ink, #1b2e22);
+}
+.sp-form-field input:focus {
+  outline: 2px solid var(--sp-green, #2d6a4f);
+  outline-offset: 1px;
+  border-color: var(--sp-green, #2d6a4f);
+}
+
+.sp-2fa-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--sp-sage, #e8f0ea);
+  border-radius: 8px;
+  margin-bottom: 28px;
+}
+.sp-2fa-toggle span { font-size: 14px; font-weight: 600; }
+.sp-2fa-toggle small { display: block; font-weight: 400; color: var(--sp-muted, #5c6b62); font-size: 12.5px; margin-top: 2px; }
+
+.sp-switch {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  border: none;
+  background: #c4cfc7;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+.sp-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+.sp-switch.on { background: var(--sp-green, #2d6a4f); }
+.sp-switch.on::after { transform: translateX(18px); }
+
+.sp-login-actions {
+  display: flex;
+  gap: 12px;
+}
+.sp-login-actions .sp-btn { flex: 1; text-align: center; }
+
+@media (max-width: 860px) {
+  .sp-login-body { grid-template-columns: 1fr; padding: 32px 24px; gap: 32px; }
+  .sp-login-card { padding: 28px; }
+}
+
+/* ===== SmartPantry — Browse Donations Page ===== */
+
+.sp-donations {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--sp-ink, #1b2e22);
+  background: var(--sp-bg, #fafaf7);
+  min-height: 100vh;
+}
+.sp-donations * { box-sizing: border-box; }
+
+.sp-app-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+}
+
+.sp-sidebar {
+  border-right: 1px solid var(--sp-border, #dce5dd);
+  padding: 28px 20px;
+  background: #fff;
+  min-height: calc(100vh - 73px);
+}
+.sp-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--sp-ink, #1b2e22);
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+.sp-sidebar-link:hover { background: var(--sp-sage, #e8f0ea); }
+.sp-sidebar-link.active { background: var(--sp-sage, #e8f0ea); color: var(--sp-green, #2d6a4f); font-weight: 700; }
+
+.sp-donations-main { padding: 40px 48px 64px; }
+
+.sp-page-head { text-align: center; margin-bottom: 36px; }
+.sp-page-head h1 { font-size: 34px; font-weight: 800; margin: 0 0 8px; letter-spacing: -0.01em; }
+.sp-page-head p { color: var(--sp-muted, #5c6b62); font-size: 15.5px; margin: 0; }
+
+.sp-donations-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* --- Filters panel --- */
+.sp-filters {
+  background: #fff;
+  border: 1px solid var(--sp-border, #dce5dd);
+  border-radius: 14px;
+  padding: 24px;
+  position: sticky;
+  top: 24px;
+}
+.sp-filters h3 { font-size: 16px; font-weight: 700; margin: 0 0 18px; }
+.sp-filter-group { margin-bottom: 20px; }
+.sp-filter-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.sp-checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 8px; color: var(--sp-muted, #5c6b62); }
+.sp-checkbox-row input { accent-color: var(--sp-green, #2d6a4f); }
+.sp-filter-group input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--sp-border, #dce5dd);
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 13.5px;
+}
+.sp-filter-actions { display: flex; gap: 8px; margin-top: 8px; }
+.sp-filter-actions .sp-btn { flex: 1; padding: 9px; font-size: 13.5px; }
+
+/* --- Donation cards --- */
+.sp-donations-count { font-size: 14px; color: var(--sp-muted, #5c6b62); margin-bottom: 16px; }
+.sp-donation-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.sp-donation-card {
+  background: #fff;
+  border: 1px solid var(--sp-border, #dce5dd);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.sp-donation-card:hover { border-color: var(--sp-green, #2d6a4f); transform: translateY(-2px); }
+.sp-donation-image {
+  height: 130px;
+  background: var(--sp-sage, #e8f0ea);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sp-donation-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: #fff;
+  color: var(--sp-green, #2d6a4f);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.sp-donation-body { padding: 14px 16px 16px; }
+.sp-donation-body h4 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+.sp-donation-meta { font-size: 13px; color: var(--sp-muted, #5c6b62); margin: 0 0 4px; }
+.sp-donation-expiry { font-size: 12.5px; color: var(--sp-amber, #c9a227); font-weight: 600; margin: 0 0 12px; }
+.sp-donation-body .sp-btn { width: 100%; padding: 9px; font-size: 13.5px; }
+
+/* --- Pagination --- */
+.sp-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 36px;
+}
+.sp-page-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid var(--sp-border, #dce5dd);
+  background: #fff;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.sp-page-btn.active { background: var(--sp-green, #2d6a4f); color: #fff; border-color: var(--sp-green, #2d6a4f); }
+.sp-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+@media (max-width: 980px) {
+  .sp-app-layout { grid-template-columns: 1fr; }
+  .sp-sidebar { display: none; }
+  .sp-donations-grid { grid-template-columns: 1fr; }
+  .sp-donation-cards { grid-template-columns: repeat(2, 1fr); }
+  .sp-donations-main { padding: 28px 20px; }
+}
+@media (max-width: 600px) {
+  .sp-donation-cards { grid-template-columns: 1fr; }
 }

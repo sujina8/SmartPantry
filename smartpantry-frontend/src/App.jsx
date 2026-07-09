@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
-import Navbar from './components/Navbar'
 
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -17,11 +16,8 @@ const ProtectedRoute = ({ children }) => {
 }
 
 function App() {
-  const { user } = useAuth()
-
   return (
     <>
-      {user && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
