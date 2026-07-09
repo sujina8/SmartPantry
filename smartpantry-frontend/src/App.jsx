@@ -8,51 +8,44 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Inventory from './pages/Inventory'
 import BrowseDonations from './pages/BrowseDonations'
+import Notifications from './pages/Notifications'
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth()
-
   if (!user) return <Navigate to="/login" />
-
   return children
 }
 
 function App() {
+  const { user } = useAuth()
+
   return (
     <>
-      <Navbar />
-
+      {user && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/inventory"
-          element={
-            <ProtectedRoute>
-              <Inventory />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/donations"
-          element={
-            <ProtectedRoute>
-              <BrowseDonations />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/inventory" element={
+          <ProtectedRoute>
+            <Inventory />
+          </ProtectedRoute>
+        } />
+        <Route path="/donations" element={
+          <ProtectedRoute>
+            <BrowseDonations />
+          </ProtectedRoute>
+        } />
+        <Route path="/notifications" element={
+          <ProtectedRoute>
+            <Notifications />
+          </ProtectedRoute>
+        } />
       </Routes>
     </>
   )
