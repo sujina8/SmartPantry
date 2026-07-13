@@ -1,22 +1,53 @@
 import { Link } from 'react-router-dom';
-import pantryPhoto from '../assets/1.jpg';
-function FeatureIcon({ path }) {
+import './styles/Home.css';
+
+// Simple line-art pantry shelf illustration — no stock imagery, ties to the
+// app's actual subject matter instead of a generic hero graphic.
+function PantryIllustration() {
   return (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6f8f7f" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      {path}
+    <svg width="280" height="220" viewBox="0 0 280 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="10" width="240" height="200" rx="8" stroke="#2d6a4f" strokeWidth="2.5" />
+      <line x1="20" y1="76" x2="260" y2="76" stroke="#2d6a4f" strokeWidth="2.5" />
+      <line x1="20" y1="142" x2="260" y2="142" stroke="#2d6a4f" strokeWidth="2.5" />
+      {/* jar */}
+      <rect x="40" y="34" width="34" height="34" rx="4" stroke="#2d6a4f" strokeWidth="2" />
+      <rect x="48" y="26" width="18" height="10" rx="2" fill="#2d6a4f" />
+      {/* can */}
+      <rect x="92" y="30" width="30" height="38" rx="3" stroke="#c9a227" strokeWidth="2" />
+      <ellipse cx="107" cy="30" rx="15" ry="4" stroke="#c9a227" strokeWidth="2" />
+      {/* bottle */}
+      <path d="M150 30 h14 v10 l6 8 v20 h-26 v-20 l6 -8 z" stroke="#2d6a4f" strokeWidth="2" />
+      {/* leafy veg */}
+      <path d="M200 66 q-4 -20 10 -30 q10 12 0 30 z" stroke="#2d6a4f" strokeWidth="2" />
+      <path d="M214 66 q4 -16 -6 -26 q-8 10 0 26 z" stroke="#2d6a4f" strokeWidth="2" />
+
+      {/* middle shelf: fruit basket */}
+      <path d="M40 128 h50 l-6 -20 h-38 z" stroke="#c9a227" strokeWidth="2" />
+      <circle cx="55" cy="118" r="7" stroke="#c9a227" strokeWidth="2" />
+      <circle cx="68" cy="120" r="6" stroke="#c9a227" strokeWidth="2" />
+      {/* bread */}
+      <path d="M100 132 q0 -22 22 -22 q22 0 22 22 z" stroke="#2d6a4f" strokeWidth="2" />
+      <path d="M108 132 q2 -12 0 -18 M120 132 q2 -14 0 -20 M132 132 q2 -12 0 -18" stroke="#2d6a4f" strokeWidth="1.5" />
+      {/* box (donation-ready) */}
+      <rect x="170" y="108" width="40" height="24" stroke="#b5543a" strokeWidth="2" />
+      <line x1="170" y1="118" x2="210" y2="118" stroke="#b5543a" strokeWidth="2" />
+      <line x1="190" y1="108" x2="190" y2="118" stroke="#b5543a" strokeWidth="2" />
+
+      {/* bottom shelf: milk + eggs */}
+      <rect x="40" y="166" width="24" height="34" rx="3" stroke="#2d6a4f" strokeWidth="2" />
+      <path d="M40 172 l12 -10 12 10" stroke="#2d6a4f" strokeWidth="2" />
+      <rect x="86" y="176" width="46" height="24" rx="6" stroke="#2d6a4f" strokeWidth="2" />
+      <circle cx="99" cy="188" r="6" stroke="#2d6a4f" strokeWidth="1.5" />
+      <circle cx="112" cy="188" r="6" stroke="#2d6a4f" strokeWidth="1.5" />
+      <circle cx="125" cy="188" r="6" stroke="#2d6a4f" strokeWidth="1.5" />
     </svg>
   );
 }
 
-// Flat, single-color abstract shape — deliberately not a gradient,
-// sits behind the hero text to add quiet depth without illustration clutter.
-function HeroBlob() {
+function FeatureIcon({ path }) {
   return (
-    <svg className="sp-hero-blob" width="640" height="420" viewBox="0 0 640 420" fill="none">
-      <path
-        d="M420 40C500 70 560 140 555 220C550 300 480 360 400 385C320 410 220 405 150 355C80 305 40 210 70 140C100 70 190 30 270 15C350 0 340 10 420 40Z"
-        fill="#eef2ec"
-      />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {path}
     </svg>
   );
 }
@@ -25,14 +56,14 @@ export default function Home() {
   return (
     <div className="sp-home">
       <nav className="sp-nav">
-        <Link to="/" className="sp-nav-brand">
+        <div className="sp-nav-brand">
           <svg className="sp-nav-logo" viewBox="0 0 34 34" fill="none">
-            <rect width="34" height="34" rx="9" fill="#2d6a4f" />
+            <rect width="34" height="34" rx="8" fill="#2d6a4f" />
             <path d="M10 22V14a7 7 0 0 1 14 0v8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
             <path d="M8 22h18" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
           </svg>
           SmartPantry
-        </Link>
+        </div>
         <ul className="sp-nav-links">
           <li><a href="#home">Home</a></li>
           <li><a href="#about">About</a></li>
@@ -46,23 +77,20 @@ export default function Home() {
       </nav>
 
       <header className="sp-hero" id="home">
-        <HeroBlob />
-        <div className="sp-hero-content">
-          <h1 className="sp-fade-1">
-            Reduce food waste,<br /><em>save</em> more
-          </h1>
-          <p className="sp-hero-sub sp-fade-2">
+        <div>
+          <div className="sp-hero-eyebrow">Food waste, solved at home</div>
+          <h1>Reduce food waste, save more</h1>
+          <p>
             Track what's in your pantry, catch expiry dates before they catch you,
-            and turn what you won't use into something that helps someone else.
+            donate what you won't use, and plan meals around what's already there.
           </p>
-          <div className="sp-hero-quote sp-fade-3">
-            <p>A well-kept pantry is a quiet kind of care — for your food, your time, and the people you feed.</p>
-            <span>SmartPantry</span>
-          </div>
-          <div className="sp-hero-actions sp-fade-4">
+          <div className="sp-hero-actions">
             <Link to="/register" className="sp-btn sp-btn-primary">Get Started</Link>
             <a href="#how-it-works" className="sp-btn sp-btn-secondary">Learn More</a>
           </div>
+        </div>
+        <div className="sp-hero-visual">
+          <PantryIllustration />
         </div>
       </header>
 
@@ -105,17 +133,14 @@ export default function Home() {
         </div>
         <div className="sp-steps">
           <div className="sp-step">
-            <span className="sp-step-num">01</span>
             <h3>Add your food</h3>
             <p>Start by listing what you have at home — capture item details and track quantities.</p>
           </div>
           <div className="sp-step">
-            <span className="sp-step-num">02</span>
             <h3>Get alerts</h3>
             <p>Receive expiry reminders before food goes bad, so you stay on top of what needs to be used first.</p>
           </div>
           <div className="sp-step">
-            <span className="sp-step-num">03</span>
             <h3>Donate or plan</h3>
             <p>Donate surplus or plan meals around it to reduce waste with smart next actions.</p>
           </div>
@@ -134,7 +159,7 @@ export default function Home() {
             </p>
           </div>
           <div className="sp-about-visual">
-            <img src={pantryPhoto} alt="A stocked home pantry" className="sp-about-photo" />
+            <PantryIllustration />
           </div>
         </div>
       </section>
