@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import pantryPhoto from '../assets/pantry-photo.jpg';
 
 // Simple line-art pantry shelf illustration — no stock imagery, ties to the
 // app's actual subject matter instead of a generic hero graphic.
@@ -158,7 +159,7 @@ export default function Home() {
             </p>
           </div>
           <div className="sp-about-visual">
-            <PantryIllustration />
+            <img src={pantryPhoto} alt="A stocked home pantry" className="sp-about-photo" />
           </div>
         </div>
       </section>
