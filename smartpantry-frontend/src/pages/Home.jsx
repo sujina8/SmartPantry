@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import './styles/Home.css';
 
 // Simple line-art pantry shelf illustration — no stock imagery, ties to the
 // app's actual subject matter instead of a generic hero graphic.
