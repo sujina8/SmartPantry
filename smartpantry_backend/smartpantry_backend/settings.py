@@ -15,18 +15,17 @@ ALLOWED_HOSTS = ['*']
 
 # All apps including our custom ones
 INSTALLED_APPS = [
+    'daphne',  # must be listed FIRST — enables ASGI-aware runserver for WebSockets
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Third party
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     'channels',
-    # Our apps
     'users',
     'food',
     'donation',
