@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import API from '../services/api';
+import Sidebar from '../components/Sidebar';
 
 const CATEGORIES = ['others', 'vegetables', 'fruits', 'dairy', 'meat', 'grains', 'beverages', 'snacks'];
 const STORAGE_LOCATIONS = ['pantry', 'fridge', 'freezer', 'counter'];
@@ -118,12 +118,7 @@ export default function Inventory() {
   return (
     <div className="sp-donations">
       <div className="sp-app-layout">
-        <aside className="sp-sidebar">
-          <Link to="/dashboard" className="sp-sidebar-link">Dashboard</Link>
-          <Link to="/inventory" className="sp-sidebar-link active">My Inventory</Link>
-          <Link to="/donations" className="sp-sidebar-link">Donations</Link>
-          <Link to="/notifications" className="sp-sidebar-link">Notifications</Link>
-        </aside>
+        <Sidebar active="inventory" />
 
         <main className="sp-donations-main">
           <div className="sp-page-head">
