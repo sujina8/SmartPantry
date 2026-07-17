@@ -1313,3 +1313,42 @@ body {
 @media (max-width: 600px) {
   .sp-modal-grid { grid-template-columns: 1fr; }
 }
+
+/* ===== Sidebar footer: user info + logout ===== */
+.sp-sidebar { display: flex; flex-direction: column; justify-content: space-between; }
+.sp-sidebar-links { display: flex; flex-direction: column; }
+.sp-sidebar-footer { border-top: 1px solid var(--sp-border, #dce5dd); padding-top: 16px; }
+.sp-sidebar-user { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.sp-sidebar-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--sp-green, #2d6a4f);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.sp-sidebar-email {
+  font-size: 13px;
+  color: var(--sp-ink, #1b2e22);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sp-sidebar-logout {
+  width: 100%;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px;
+  border-radius: 8px;
+  border: 1.5px solid var(--sp-border, #dce5dd);
+  background: #fff;
+  color: var(--sp-ink, #1b2e22);
+  cursor: pointer;
+}
+.sp-sidebar-logout:hover { border-color: #b5543a; color: #b5543a; }

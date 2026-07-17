@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import api from '../services/api';
+import Sidebar from '../components/Sidebar';
 
 const CATEGORIES = ['Fresh', 'Canned', 'Frozen', 'Dairy'];
 
@@ -36,12 +36,7 @@ export default function BrowseDonations() {
   return (
     <div className="sp-donations">
       <div className="sp-app-layout">
-        <aside className="sp-sidebar">
-          <Link to="/donations" className="sp-sidebar-link active">Donations</Link>
-          <a href="#locations" className="sp-sidebar-link">Locations</a>
-          <Link to="/inventory" className="sp-sidebar-link">My Inventory</Link>
-          <a href="#claims" className="sp-sidebar-link">Claims</a>
-        </aside>
+        <Sidebar active="donations" />
 
         <main className="sp-donations-main">
           <div className="sp-page-head">
