@@ -1183,3 +1183,172 @@ body {
   .sp-register-body { grid-template-columns: 1fr; padding: 32px 24px; gap: 32px; }
   .sp-register-card { padding: 28px; }
 }
+
+/*  ebSocket status badge (Notifications page) */
+.notifications-header { display: flex; align-items: center; justify-content: space-between; }
+.ws-status { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 12px; }
+.ws-connected { background: #4caf50; color: #fff; }
+.ws-disconnected { background: #999; color: #fff; }
+
+
+.sp-analytics-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.sp-analytics-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.sp-chart-card {
+  background: #fff;
+  border: 1px solid var(--sp-border, #dce5dd);
+  border-radius: 14px;
+  padding: 24px;
+}
+.sp-chart-card h3 { font-size: 16px; font-weight: 700; margin: 0 0 18px; }
+.sp-chart-wrap { position: relative; height: 260px; }
+
+@media (max-width: 900px) {
+  .sp-analytics-summary { grid-template-columns: 1fr; }
+  .sp-analytics-charts { grid-template-columns: 1fr; }
+}
+/* ===== SmartPantry — Inventory Page ===== */
+
+.sp-pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.sp-pill {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--sp-border, #dce5dd);
+  background: #fff;
+  color: var(--sp-ink, #1b2e22);
+  cursor: pointer;
+}
+.sp-pill.active { background: var(--sp-green, #2d6a4f); border-color: var(--sp-green, #2d6a4f); color: #fff; }
+
+.sp-inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid var(--sp-border, #dce5dd);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.sp-inventory-table th {
+  background: var(--sp-sage, #e8f0ea);
+  color: var(--sp-ink, #1b2e22);
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.sp-inventory-table td {
+  padding: 12px 16px;
+  border-top: 1px solid var(--sp-border, #dce5dd);
+  font-size: 14px;
+}
+
+.sp-badge { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 12px; }
+.sp-badge-red { background: #b5543a; color: #fff; }
+.sp-badge-amber { background: #ff9800; color: #fff; }
+.sp-badge-green { background: #4caf50; color: #fff; }
+
+.sp-icon-btn {
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--sp-border, #dce5dd);
+  background: #fff;
+  cursor: pointer;
+  margin-right: 6px;
+}
+.sp-icon-btn-delete { border-color: #b5543a; color: #b5543a; }
+
+/* --- Add/Edit modal --- */
+.sp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(27, 46, 34, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 24px;
+}
+.sp-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.sp-modal h3 { font-size: 20px; font-weight: 800; margin: 0 0 20px; }
+.sp-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.sp-modal select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--sp-border, #dce5dd);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14.5px;
+  background: #fff;
+}
+
+@media (max-width: 600px) {
+  .sp-modal-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== Sidebar footer: user info + logout ===== */
+.sp-sidebar { display: flex; flex-direction: column; justify-content: space-between; }
+.sp-sidebar-links { display: flex; flex-direction: column; }
+.sp-sidebar-footer { border-top: 1px solid var(--sp-border, #dce5dd); padding-top: 16px; }
+.sp-sidebar-user { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.sp-sidebar-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--sp-green, #2d6a4f);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.sp-sidebar-email {
+  font-size: 13px;
+  color: var(--sp-ink, #1b2e22);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sp-sidebar-logout {
+  width: 100%;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px;
+  border-radius: 8px;
+  border: 1.5px solid var(--sp-border, #dce5dd);
+  background: #fff;
+  color: var(--sp-ink, #1b2e22);
+  cursor: pointer;
+}
+.sp-sidebar-logout:hover { border-color: #b5543a; color: #b5543a; }
