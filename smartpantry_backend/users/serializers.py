@@ -9,7 +9,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = [
             'email', 'full_name', 'phone_number',
-            'household_size', 'password', 'confirm_password'
+            'household_size', 'password', 'confirm_password',
+            'is_2fa_enabled',
         ]
 
     def validate(self, data):

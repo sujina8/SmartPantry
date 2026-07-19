@@ -1478,6 +1478,24 @@ body {
   .sp-stat-cards { grid-template-columns: 1fr; }
   .sp-dash-panels { grid-template-columns: 1fr; }
 }
-/* ===== Donate action button (Inventory page) ===== */
+/*  Donate action button (Inventory page) */
 .sp-icon-btn-donate { border-color: var(--sp-green, #2d6a4f); color: var(--sp-green, #2d6a4f); }
 .sp-icon-btn-donate:hover { background: var(--sp-sage, #e8f0ea); }
+
+/*  Password visibility toggle */
+.sp-password-wrap { position: relative; }
+.sp-password-wrap input { padding-right: 44px; }
+.sp-password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--sp-muted, #5c6b62);
+  display: flex;
+  align-items: center;
+}
+.sp-password-toggle:hover { color: var(--sp-green, #2d6a4f); }
