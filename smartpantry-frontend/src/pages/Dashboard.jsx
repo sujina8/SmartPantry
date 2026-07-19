@@ -27,7 +27,7 @@ const Dashboard = () => {
   useEffect(() => {
     Promise.all([
       API.get('/inventory/').catch(() => ({ data: [] })),
-      API.get('/donation/').catch(() => ({ data: [] })),
+      API.get('/donations/').catch(() => ({ data: [] })),
     ])
       .then(([invRes, donRes]) => {
         setInventory(invRes.data)
