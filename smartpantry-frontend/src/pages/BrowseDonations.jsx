@@ -12,7 +12,7 @@ export default function BrowseDonations() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    api.get('/donation/')
+    api.get('/donations/')
       .then((res) => setDonations(res.data))
       .catch((err) => console.error('Failed to load donations', err))
       .finally(() => setLoading(false));
@@ -26,7 +26,7 @@ export default function BrowseDonations() {
 
   const handleClaim = async (id) => {
     try {
-      await api.post(`/donation/${id}/claim/`);
+      await api.post(`/donations/${id}/claim/`);
       setDonations((prev) => prev.map((d) => (d.id === id ? { ...d, status: 'claimed' } : d)));
     } catch (err) {
       console.error('Failed to claim donation', err);
