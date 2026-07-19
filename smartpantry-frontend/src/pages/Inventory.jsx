@@ -15,6 +15,8 @@ const emptyForm = {
   notes: '',
 };
 
+const emptyDonateForm = { description: '', pickup_info: '' };
+
 function getStatus(item) {
   const today = new Date().toISOString().split('T')[0];
   if (item.expiry_date < today) return 'expired';
@@ -31,6 +33,11 @@ export default function Inventory() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState(emptyForm);
+
+  const [showDonateModal, setShowDonateModal] = useState(false);
+  const [donatingItem, setDonatingItem] = useState(null);
+  const [donateForm, setDonateForm] = useState(emptyDonateForm);
+  const [donateError, setDonateError] = useState('');
 
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -101,6 +108,34 @@ export default function Inventory() {
       fetchItems();
     } catch {
       setError('Failed to delete item');
+    }
+  };
+
+  const openDonateModal = (item) => {
+    setDonatingItem(item);
+    setDonateForm(emptyDonateForm);
+    setDonateError('');
+    setShowDonateModal(true);
+  };
+
+  const handleDonateChange = (e) => {
+    setDonateForm({ ...donateForm, [e.target.name]: e.target.value });
+  };
+
+  const handleDonateSubmit = async (e) => {
+    e.preventDefault();
+    setDonateError('');
+    try {
+      await API.post('/donation/', {
+        food_item: donatingItem.id,
+        description: donateForm.description,
+        pickup_info: donateForm.pickup_info,
+      });
+      setShowDonateModal(false);
+      setSuccess(`${donatingItem.name} was listed for donation!`);
+      setTimeout(() => setSuccess(''), 3000);
+    } catch {
+      setDonateError('Failed to list this item for donation. Please check the details and try again.');
     }
   };
 
@@ -209,6 +244,7 @@ export default function Inventory() {
                             {status === 'good' && <span className="sp-badge sp-badge-green">Good</span>}
                           </td>
                           <td>
+                            <button className="sp-icon-btn sp-icon-btn-donate" onClick={() => openDonateModal(item)}>Donate</button>
                             <button className="sp-icon-btn" onClick={() => openEditModal(item)}>Edit</button>
                             <button className="sp-icon-btn sp-icon-btn-delete" onClick={() => handleDelete(item.id)}>Delete</button>
                           </td>
@@ -269,6 +305,43 @@ export default function Inventory() {
               <div className="sp-register-actions">
                 <button type="button" className="sp-btn sp-btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
                 <button type="submit" className="sp-btn sp-btn-primary">{editingId ? 'Save Changes' : 'Add Item'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showDonateModal && donatingItem && (
+        <div className="sp-modal-overlay" onClick={() => setShowDonateModal(false)}>
+          <div className="sp-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Donate "{donatingItem.name}"</h3>
+            <p className="sp-dash-empty" style={{ marginBottom: 16 }}>
+              This will list the item on the Donations page for others to claim.
+            </p>
+            <form onSubmit={handleDonateSubmit}>
+              {donateError && <p className="error">{donateError}</p>}
+              <div className="sp-form-field">
+                <label>Description (optional)</label>
+                <textarea
+                  name="description"
+                  value={donateForm.description}
+                  onChange={handleDonateChange}
+                  placeholder="e.g., Half loaf, still fresh, opened yesterday"
+                />
+              </div>
+              <div className="sp-form-field">
+                <label>Pickup Info (optional)</label>
+                <input
+                  type="text"
+                  name="pickup_info"
+                  value={donateForm.pickup_info}
+                  onChange={handleDonateChange}
+                  placeholder="e.g., Available after 5pm, Block C lobby"
+                />
+              </div>
+              <div className="sp-register-actions">
+                <button type="button" className="sp-btn sp-btn-secondary" onClick={() => setShowDonateModal(false)}>Cancel</button>
+                <button type="submit" className="sp-btn sp-btn-primary">List for Donation</button>
               </div>
             </form>
           </div>

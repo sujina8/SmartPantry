@@ -1478,3 +1478,6 @@ body {
   .sp-stat-cards { grid-template-columns: 1fr; }
   .sp-dash-panels { grid-template-columns: 1fr; }
 }
+/* ===== Donate action button (Inventory page) ===== */
+.sp-icon-btn-donate { border-color: var(--sp-green, #2d6a4f); color: var(--sp-green, #2d6a4f); }
+.sp-icon-btn-donate:hover { background: var(--sp-sage, #e8f0ea); }
