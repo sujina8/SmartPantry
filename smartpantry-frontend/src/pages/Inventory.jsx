@@ -126,7 +126,7 @@ export default function Inventory() {
     e.preventDefault();
     setDonateError('');
     try {
-      await API.post('/donation/', {
+      await API.post('/donations/', {
         food_item: donatingItem.id,
         description: donateForm.description,
         pickup_info: donateForm.pickup_info,
