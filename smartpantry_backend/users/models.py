@@ -1,61 +1,63 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+# users/models.py
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin, BaseUserManager
 from django.db import models
+from django.utils import timezone
+from datetime import timedelta
+import random
+import secrets
 
 
 class CustomUserManager(BaseUserManager):
-    # Create a normal user
     def create_user(self, email, password=None, **extra_fields):
         if not email:
-            raise ValueError("Email is required")
-
+            raise ValueError('Email is required')
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    # Create an admin user
     def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("is_active", True)
-
-        if extra_fields.get("is_staff") is not True:
-            raise ValueError("Superuser must have is_staff=True.")
-
-        if extra_fields.get("is_superuser") is not True:
-            raise ValueError("Superuser must have is_superuser=True.")
-
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    # Basic Information
-    email = models.EmailField(unique=True)
+    email = models.EmailField(max_length=254, unique=True)
     full_name = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=20, blank=True)
     household_size = models.IntegerField(default=1)
 
-    # Two-Factor Authentication
     is_2fa_enabled = models.BooleanField(default=False)
     otp_code = models.CharField(max_length=6, blank=True, null=True)
     otp_expiry = models.DateTimeField(blank=True, null=True)
+    verification_token = models.CharField(max_length=64, blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
 
-    # Privacy Settings
     is_donations_public = models.BooleanField(default=True)
     email_notifications = models.BooleanField(default=True)
     push_notifications = models.BooleanField(default=True)
 
-    # Required Django Fields
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    # Manager
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['full_name']
+
     objects = CustomUserManager()
 
-    # Login with email
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    def generate_otp(self):
+        self.otp_code = str(random.randint(100000, 999999))
+        self.otp_expiry = timezone.now() + timedelta(minutes=10)
+        self.verification_token = secrets.token_urlsafe(32)
+        self.save()
+        return self.otp_code, self.verification_token
 
-    def __str__(self):
-        return self.email
+    def is_otp_valid(self, entered_code):
+        if not self.otp_code or not self.otp_expiry:
+            return False
+        if timezone.now() > self.otp_expiry:
+            return False
+        return self.otp_code == entered_code
