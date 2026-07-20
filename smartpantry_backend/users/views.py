@@ -1,117 +1,102 @@
-import secrets
-from datetime import timedelta
-from django.utils import timezone
-from django.core.mail import send_mail
-from rest_framework import status
-from rest_framework.views import APIView
+# users/views.py
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import CustomUser
-from .serializers import RegisterSerializer, UserSerializer
 
 
-def issue_tokens_response(user):
+def user_payload(user):
+    return {"id": user.id, "full_name": user.full_name, "email": user.email}
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register(request):
+    full_name = request.data.get('full_name')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    household_size = request.data.get('household_size')
+
+    if CustomUser.objects.filter(email=email).exists():
+        return Response({"error": "This email is already registered. Please log in or use a different email."}, status=400)
+
+    user = CustomUser.objects.create_user(
+        email=email,
+        password=password,
+        full_name=full_name,
+        household_size=household_size or 1,
+        is_verified=True,  # account usable immediately; 2FA happens at login instead
+    )
+    return Response({"message": "Registration successful. Please log in.", "user_id": user.id}, status=201)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    user = authenticate(request, email=email, password=password)
+
+    if user is None:
+        return Response({"error": "Invalid email or password"}, status=401)
+
+    # Always require OTP at login (2FA)
+    code, _token = user.generate_otp()
+
+    send_mail(
+        subject='Your SmartPantry Login Code',
+        message=f"Your login verification code is: {code}\nThis code expires in 10 minutes.",
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[user.email],
+    )
+
+    return Response({"requires_2fa": True, "email": user.email}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def verify_otp(request):
+    email = request.data.get('email')
+    entered_code = request.data.get('otp')
+
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "User not found"}, status=404)
+
+    if not user.is_otp_valid(entered_code):
+        return Response({"error": "Invalid or expired code. Please try logging in again."}, status=400)
+
+    user.otp_code = None
+    user.save()
+
     refresh = RefreshToken.for_user(user)
     return Response({
-        'access': str(refresh.access_token),
-        'refresh': str(refresh),
-        'user': {
-            'email': user.email,
-            'full_name': user.full_name,
-        }
-    })
+        "access": str(refresh.access_token),
+        "refresh": str(refresh),
+        "user": user_payload(user),
+    }, status=200)
 
 
-class RegisterView(APIView):
-    permission_classes = [AllowAny]
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def resend_code(request):
+    email = request.data.get('email')
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "User not found"}, status=404)
 
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response({
-                'message': 'Registration successful',
-                'email': user.email
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class LoginView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        user = authenticate(request, email=email, password=password)
-        if user is None:
-            return Response({
-                'error': 'Invalid email or password'
-            }, status=status.HTTP_401_UNAUTHORIZED)
-
-        if user.is_2fa_enabled:
-            otp = f"{secrets.randbelow(1000000):06d}"
-            user.otp_code = otp
-            user.otp_expiry = timezone.now() + timedelta(minutes=10)
-            user.save(update_fields=['otp_code', 'otp_expiry'])
-
-            send_mail(
-                subject='Your SmartPantry login code',
-                message=f'Your one-time login code is: {otp}\n\nThis code expires in 10 minutes.',
-                from_email='noreply@smartpantry.local',
-                recipient_list=[user.email],
-                fail_silently=False,
-            )
-
-            return Response({
-                'requires_2fa': True,
-                'email': user.email,
-            })
-
-        return issue_tokens_response(user)
-
-
-class VerifyOTPView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        email = request.data.get('email')
-        otp = request.data.get('otp')
-
-        try:
-            user = CustomUser.objects.get(email=email)
-        except CustomUser.DoesNotExist:
-            return Response({'error': 'Invalid code. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not user.otp_code or user.otp_code != otp:
-            return Response({'error': 'Invalid code. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not user.otp_expiry or timezone.now() > user.otp_expiry:
-            return Response({'error': 'This code has expired. Please log in again.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # OTP is valid and single-use — clear it so it can't be replayed
-        user.otp_code = None
-        user.otp_expiry = None
-        user.save(update_fields=['otp_code', 'otp_expiry'])
-
-        return issue_tokens_response(user)
-
-
-class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
-
-    def patch(self, request):
-        serializer = UserSerializer(
-            request.user,
-            data=request.data,
-            partial=True
-        )
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    code, _token = user.generate_otp()
+    send_mail(
+        subject='SmartPantry – New Login Code',
+        message=f"Your new login code is: {code}",
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[user.email],
+    )
+    return Response({"message": "New code sent"}, status=200)
