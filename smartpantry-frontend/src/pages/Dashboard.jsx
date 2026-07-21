@@ -43,11 +43,7 @@ const Dashboard = () => {
     <div>
       <nav className="sp-nav">
         <Link to="/" className="sp-nav-brand">
-          <svg className="sp-nav-logo" viewBox="0 0 34 34" fill="none">
-            <rect width="34" height="34" rx="8" fill="#2d6a4f" />
-            <path d="M10 22V14a7 7 0 0 1 14 0v8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-            <path d="M8 22h18" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-          </svg>
+          <img src="/logo.png" alt="SmartPantry logo" className="sp-nav-logo" />
           SmartPantry
         </Link>
         <ul className="sp-nav-links">

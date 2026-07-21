@@ -13,7 +13,10 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/"> SmartPantry</Link>
+        <Link to="/">
+          <img src="/logo.png" alt="SmartPantry logo" className="navbar-logo" />
+          SmartPantry
+        </Link>
       </div>
       <div className="navbar-links">
         {user ? (
