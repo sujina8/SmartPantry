@@ -46,6 +46,7 @@ class FoodItem(models.Model):
     expiry_date = models.DateField()
     notes = models.TextField(blank=True)
     is_donated = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='food_images/', blank=True, null=True)
 
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
