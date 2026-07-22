@@ -8,10 +8,19 @@ import Dashboard from './pages/Dashboard'
 import Inventory from './pages/Inventory'
 import BrowseDonations from './pages/BrowseDonations'
 import Notifications from './pages/Notifications'
+import Settings from "./pages/Settings";
 
 const ProtectedRoute = ({ children }) => {
-  const { user } = useAuth()
-  if (!user) return <Navigate to="/login" />
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return <p>Loading...</p>
+  }
+
+  if (!user) {
+    return <Navigate to="/login" />
+  }
+
   return children
 }
 
@@ -22,6 +31,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/settings" element={
+  <ProtectedRoute>
+    <Settings />
+  </ProtectedRoute>
+} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Dashboard />
