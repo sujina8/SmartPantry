@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -94,6 +95,13 @@ REST_FRAMEWORK = {
     ),
 }
 
+# How long access/refresh tokens stay valid (default was only a few minutes,
+# which caused repeated 401 Unauthorized errors during normal testing/demo use)
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+}
+
 # Allow React frontend to talk to Django
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
@@ -118,6 +126,10 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+
+# Media files (user-uploaded images, e.g. food item photos)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
