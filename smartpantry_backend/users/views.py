@@ -7,6 +7,10 @@ from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import CustomUser
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from .serializers import UserSerializer
+
 
 
 def user_payload(user):
@@ -87,16 +91,39 @@ def verify_otp(request):
 @permission_classes([AllowAny])
 def resend_code(request):
     email = request.data.get('email')
+
     try:
         user = CustomUser.objects.get(email=email)
     except CustomUser.DoesNotExist:
         return Response({"error": "User not found"}, status=404)
 
     code, _token = user.generate_otp()
+
     send_mail(
         subject='SmartPantry – New Login Code',
         message=f"Your new login code is: {code}",
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[user.email],
     )
+
     return Response({"message": "New code sent"}, status=200)
+
+
+class UserSettingsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = UserSerializer(
+            request.user,
+            data=request.data,
+            partial=True
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
