@@ -1060,13 +1060,18 @@ body {
 }
 .sp-donation-card:hover { border-color: var(--sp-green, #2d6a4f); transform: translateY(-2px); }
 .sp-donation-image {
-  height: 130px;
-  background: var(--sp-sage, #e8f0ea);
+  width: 100%;
+  height: 220px;
   position: relative;
+  overflow: hidden;
+
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+
+  background: var(--sp-sage, #e8f0ea);
 }
+
 .sp-donation-tag {
   position: absolute;
   top: 10px;
@@ -1377,6 +1382,75 @@ body {
   cursor: pointer;
 }
 .sp-sidebar-logout:hover { border-color: #b5543a; color: #b5543a; }
+
+/* Settings page */
+.sp-settings-main {
+  padding: 40px 48px 64px;
+}
+
+.sp-settings-card {
+  max-width: 760px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--sp-border, #dce5dd);
+  border-radius: 16px;
+  padding: 8px 28px 28px;
+  box-shadow: 0 8px 24px rgba(27, 46, 34, 0.04);
+}
+
+.sp-settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 0;
+}
+
+.sp-settings-item + .sp-settings-item {
+  border-top: 1px solid var(--sp-border, #dce5dd);
+}
+
+.sp-settings-item h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.sp-settings-item p {
+  margin: 0;
+  color: var(--sp-muted, #5c6b62);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+.sp-switch-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sp-ink, #1b2e22);
+}
+
+.sp-switch-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--sp-green, #2d6a4f);
+}
+
+.sp-settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.sp-settings-toggle {
+  margin-bottom: 0;
+  min-width: 140px;
+  justify-content: space-between;
+  gap: 14px;
+}
 /* ===== SmartPantry — Notifications Page ===== */
 
 .sp-notif-title-row { display: flex; align-items: center; justify-content: center; gap: 12px; }
@@ -1500,6 +1574,11 @@ body {
   .sp-dashboard { padding: 28px 20px; }
   .sp-stat-cards { grid-template-columns: 1fr; }
   .sp-dash-panels { grid-template-columns: 1fr; }
+  .sp-settings-main { padding: 32px 24px 56px; }
+  .sp-settings-card { padding: 4px 20px 20px; }
+  .sp-settings-item { flex-direction: column; align-items: flex-start; }
+  .sp-settings-actions { justify-content: stretch; }
+  .sp-settings-actions .sp-btn { width: 100%; }
 }
 /*  Donate action button (Inventory page) */
 .sp-icon-btn-donate { border-color: var(--sp-green, #2d6a4f); color: var(--sp-green, #2d6a4f); }
@@ -1522,3 +1601,23 @@ body {
   align-items: center;
 }
 .sp-password-toggle:hover { color: var(--sp-green, #2d6a4f); }
+
+.sp-donation-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.25);
+  display: block;
+}
+
+.sp-no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: #5c6b62;
+  font-size: 15px;
+  font-weight: 600;
+}
