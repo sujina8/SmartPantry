@@ -10,7 +10,7 @@ class FoodItemSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'quantity', 'unit', 
             'category', 'storage_location', 'expiry_date', 
-            'notes', 'is_donated', 'date_added', 'is_expiring_soon'
+            'notes', 'is_donated', 'date_added', 'is_expiring_soon', 'image'
         ]
         read_only_fields = ['id', 'date_added', 'is_donated']
     
