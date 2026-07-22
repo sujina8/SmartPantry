@@ -13,6 +13,7 @@ const emptyForm = {
   storage_location: 'pantry',
   expiry_date: '',
   notes: '',
+  image: null,
 };
 
 const emptyDonateForm = { description: '', pickup_info: '' };
@@ -33,6 +34,7 @@ export default function Inventory() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState(emptyForm);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const [showDonateModal, setShowDonateModal] = useState(false);
   const [donatingItem, setDonatingItem] = useState(null);
@@ -62,9 +64,20 @@ export default function Inventory() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({ ...formData, image: file || null });
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImagePreview(null);
+    }
+  };
+
   const openAddModal = () => {
     setEditingId(null);
     setFormData(emptyForm);
+    setImagePreview(null);
     setShowModal(true);
   };
 
@@ -78,7 +91,9 @@ export default function Inventory() {
       storage_location: item.storage_location,
       expiry_date: item.expiry_date,
       notes: item.notes || '',
+      image: null, // only set if user picks a new file; existing image stays unless replaced
     });
+    setImagePreview(item.image || null);
     setShowModal(true);
   };
 
@@ -86,13 +101,21 @@ export default function Inventory() {
     e.preventDefault();
     setError('');
     try {
+      const data = new FormData();
+      Object.keys(formData).forEach((key) => {
+        const value = formData[key];
+        if (value !== null && value !== '') {
+          data.append(key, value);
+        }
+      });
+
       if (editingId) {
-        await API.patch(`/inventory/${editingId}/`, formData);
-        setSuccess('Food item updated successfully!');
-      } else {
-        await API.post('/inventory/', formData);
-        setSuccess('Food item added successfully!');
-      }
+    await API.patch(`/inventory/${editingId}/`, data);
+    setSuccess('Food item updated successfully!');
+} else {
+    await API.post('/inventory/', data);
+    setSuccess('Food item added successfully!');
+}
       setShowModal(false);
       fetchItems();
       setTimeout(() => setSuccess(''), 3000);
@@ -221,6 +244,7 @@ export default function Inventory() {
                 <table className="sp-inventory-table">
                   <thead>
                     <tr>
+                      <th>Photo</th>
                       <th>Name</th>
                       <th>Quantity</th>
                       <th>Category</th>
@@ -234,6 +258,24 @@ export default function Inventory() {
                       const status = getStatus(item);
                       return (
                         <tr key={item.id}>
+                          <td>
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6 }}
+                              />
+                            ) : (
+                              <div
+                                style={{
+                                  width: 44,
+                                  height: 44,
+                                  borderRadius: 6,
+                                  background: 'var(--sp-sage, #e8f0ea)',
+                                }}
+                              />
+                            )}
+                          </td>
                           <td>{item.name}</td>
                           <td>{item.quantity} {item.unit}</td>
                           <td>{item.category}</td>
@@ -298,6 +340,19 @@ export default function Inventory() {
                   </select>
                 </div>
               </div>
+
+              <div className="sp-form-field">
+                <label>Photo (optional)</label>
+                <input type="file" accept="image/*" onChange={handleImageChange} />
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    style={{ marginTop: 8, width: 90, height: 90, objectFit: 'cover', borderRadius: 8 }}
+                  />
+                )}
+              </div>
+
               <div className="sp-form-field">
                 <label>Notes (optional)</label>
                 <textarea name="notes" value={formData.notes} onChange={handleChange} placeholder="Any notes..." />

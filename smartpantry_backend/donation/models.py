@@ -12,7 +12,7 @@ class Donation(models.Model):
     claimer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='claimed_donations')
     food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE)
     description = models.TextField(blank=True)
-    pickup_info = models.TextField()
+    pickup_info = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
     created_at = models.DateTimeField(auto_now_add=True)
 
