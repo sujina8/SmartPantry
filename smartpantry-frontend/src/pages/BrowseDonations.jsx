@@ -25,13 +25,28 @@ export default function BrowseDonations() {
   };
 
   const handleClaim = async (id) => {
-    try {
-      await api.post(`/donations/${id}/claim/`);
-      setDonations((prev) => prev.map((d) => (d.id === id ? { ...d, status: 'claimed' } : d)));
-    } catch (err) {
-      console.error('Failed to claim donation', err);
-    }
-  };
+  try {
+    await api.post(`/donations/${id}/claim/`);
+
+    setDonations((prev) =>
+      prev.map((d) =>
+        d.id === id ? { ...d, status: "claimed" } : d
+      )
+    );
+  } catch (err) {
+    console.log(err.response);
+    console.log(err.response?.data);
+    alert(JSON.stringify(err.response?.data));
+  }
+};
+
+  const filteredDonations = donations.filter((item) => {
+    const category = item.food_item_detail?.category || '';
+    const categoryMatch = checkedCategories.length === 0 || checkedCategories.includes(category);
+    const locationText = `${item.pickup_info || ''} ${item.food_item_detail?.location || ''}`.toLowerCase();
+    const locationMatch = !location || locationText.includes(location.toLowerCase());
+    return categoryMatch && locationMatch;
+  });
 
   return (
     <div className="sp-donations">
@@ -86,27 +101,47 @@ export default function BrowseDonations() {
                 <p>Loading donations...</p>
               ) : (
                 <>
-                  <p className="sp-donations-count">Showing {donations.length} items</p>
+                  <p className="sp-donations-count">Showing {filteredDonations.length} items</p>
                   <div className="sp-donation-cards">
-                    {donations.map((item) => (
-                      <div className="sp-donation-card" key={item.id}>
-                        <div className="sp-donation-image">
-                          <span className="sp-donation-tag">{item.category}</span>
+                    {filteredDonations.map((item) => {
+                      const food = item.food_item_detail;
+                      return (
+                        <div className="sp-donation-card" key={item.id}>
+                          <div className="sp-donation-image">
+                            <div className="sp-donation-image">
+  <span className="sp-donation-tag">
+    {food?.category}
+  </span>
+
+  {food?.image ? (
+    <img
+      src={food.image}
+      alt={food.name}
+      className="sp-donation-img"
+    />
+  ) : (
+    <div className="sp-no-image">
+      No image
+    </div>
+  )}
+</div>
+                            <span className="sp-donation-tag">{food?.category}</span>
+                          </div>
+                          <div className="sp-donation-body">
+                            <h4>{food?.name || 'Unnamed item'}</h4>
+                            <p className="sp-donation-meta">Qty: {food?.quantity} {food?.unit}</p>
+                            <p className="sp-donation-expiry">Expires: {food?.expiry_date}</p>
+                            <button
+                              className="sp-btn sp-btn-primary"
+                              disabled={item.status === 'claimed'}
+                              onClick={() => handleClaim(item.id)}
+                            >
+                              {item.status === 'claimed' ? 'Claimed' : 'Claim'}
+                            </button>
+                          </div>
                         </div>
-                        <div className="sp-donation-body">
-                          <h4>{item.food_item?.name || item.name}</h4>
-                          <p className="sp-donation-meta">Qty: {item.quantity}</p>
-                          <p className="sp-donation-expiry">Expires: {item.expiry_date}</p>
-                          <button
-                            className="sp-btn sp-btn-primary"
-                            disabled={item.status === 'claimed'}
-                            onClick={() => handleClaim(item.id)}
-                          >
-                            {item.status === 'claimed' ? 'Claimed' : 'Claim'}
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   <div className="sp-pagination">
