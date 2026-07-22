@@ -51,6 +51,7 @@ const Dashboard = () => {
           <li><Link to="/inventory">Inventory</Link></li>
           <li><Link to="/donations">Donations</Link></li>
           <li><Link to="/notifications">Notifications</Link></li>
+          <li><Link to="/settings">Settings</Link></li>
         </ul>
         <div className="sp-nav-actions">
           <button onClick={handleLogout} className="sp-btn sp-btn-secondary">Logout</button>
