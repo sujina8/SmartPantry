@@ -6,6 +6,7 @@ const LINKS = [
   { to: '/inventory', label: 'My Inventory', key: 'inventory' },
   { to: '/donations', label: 'Donations', key: 'donations' },
   { to: '/notifications', label: 'Notifications', key: 'notifications' },
+  { to: '/settings', label: 'Settings', key: 'settings' }, // <-- Add this
 ];
 
 export default function Sidebar({ active }) {
