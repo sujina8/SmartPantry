@@ -1,0 +1,26 @@
+{
+  "name": "smartpantry",
+  "version": "1.0.0",
+  "description": "Group Members : Sujina Tuladhar(E2300582)\r               : Pasang Lama(E2400050)\r               : Manav Rawal(E2300560)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sujina8/SmartPantry.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sujina8/SmartPantry/issues"
+  },
+  "homepage": "https://github.com/sujina8/SmartPantry#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.1.1"
+  }
+}
