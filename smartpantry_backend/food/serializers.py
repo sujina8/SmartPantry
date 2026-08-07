@@ -15,7 +15,6 @@ class FoodItemSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'date_added', 'is_donated']
     
     def validate_expiry_date(self, value):
-        # Expiry date cannot be in the past
         if value < timezone.now().date():
             raise serializers.ValidationError(
                 "Expiry date cannot be in the past."
@@ -23,7 +22,6 @@ class FoodItemSerializer(serializers.ModelSerializer):
         return value
     
     def validate_quantity(self, value):
-        # Quantity must be greater than 0
         if value <= 0:
             raise serializers.ValidationError(
                 "Quantity must be greater than 0."

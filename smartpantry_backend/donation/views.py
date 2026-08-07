@@ -23,7 +23,7 @@ class DonationViewSet(viewsets.ModelViewSet):
 
         if donation.donor == request.user:
             return Response(
-                {"You cannot claim your own donation."},
+                {"error": "You cannot claim your own donation."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
