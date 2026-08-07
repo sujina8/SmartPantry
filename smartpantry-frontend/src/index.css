@@ -1621,3 +1621,9 @@ body {
   font-size: 15px;
   font-weight: 600;
 }
+.sp-chart-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--sp-ink, #1b2e22);
+  margin: 0 0 16px;
+}

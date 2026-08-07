@@ -9,6 +9,7 @@ import Inventory from './pages/Inventory'
 import BrowseDonations from './pages/BrowseDonations'
 import Notifications from './pages/Notifications'
 import Settings from "./pages/Settings";
+import Analytics from './pages/Analytics'
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -56,6 +57,11 @@ function App() {
             <Notifications />
           </ProtectedRoute>
         } />
+        <Route path="/analytics" element={
+  <ProtectedRoute>
+    <Analytics />
+  </ProtectedRoute>
+} />
       </Routes>
     </>
   )
