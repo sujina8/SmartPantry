@@ -1627,3 +1627,47 @@ body {
   color: var(--sp-ink, #1b2e22);
   margin: 0 0 16px;
 }
+
+.sp-mealplan-grid-wrap {
+  overflow-x: auto;
+}
+.sp-mealplan-grid {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid var(--sp-border, #e3e0d8);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.sp-mealplan-grid th, .sp-mealplan-grid td {
+  border: 1px solid var(--sp-border, #e3e0d8);
+  padding: 12px;
+  text-align: center;
+  min-width: 110px;
+}
+.sp-mealplan-day { display: block; font-weight: 700; font-size: 13px; }
+.sp-mealplan-date { display: block; font-size: 11px; color: var(--sp-muted, #5c6b62); }
+.sp-mealplan-rowlabel { font-weight: 700; background: var(--sp-sage, #f2f5f0); text-align: left; }
+.sp-mealplan-cell { cursor: pointer; height: 56px; transition: background 0.15s; }
+.sp-mealplan-cell:hover { background: var(--sp-sage, #f2f5f0); }
+.sp-mealplan-cell.filled { background: #eef6f0; }
+.sp-mealplan-cell-name { font-size: 13px; font-weight: 600; color: var(--sp-green, #2d6a4f); }
+.sp-mealplan-cell-add { color: var(--sp-muted, #a8b5ac); font-size: 18px; }
+
+.sp-suggestion-list { display: flex; flex-direction: column; gap: 12px; }
+.sp-suggestion-card {
+  display: flex; justify-content: space-between; align-items: center;
+  border: 1px solid var(--sp-border, #e3e0d8); border-radius: 12px; padding: 16px;
+  background: #fff;
+}
+.sp-suggestion-name { font-weight: 700; margin: 0 0 2px; }
+.sp-suggestion-meta { font-size: 12px; color: var(--sp-muted, #5c6b62); margin: 0 0 4px; }
+.sp-suggestion-uses { font-size: 13px; margin: 0 0 8px; }
+.sp-badge-suggestion {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 999px;
+  background: var(--sp-sage, #f2f5f0); color: var(--sp-green, #2d6a4f);
+}
+.sp-badge-suggestion.expiring {
+  background: #fdecea; color: var(--sp-red, #b5543a);
+}

@@ -8,6 +8,7 @@ const LINKS = [
   { to: '/notifications', label: 'Notifications', key: 'notifications' },
   { to: '/settings', label: 'Settings', key: 'settings' },
   { to: '/analytics', label: 'Food Analytics', key: 'analytics' },
+  { to: '/mealplan', label: 'Meal Planner', key: 'mealplan' },
 ];
 
 export default function Sidebar({ active }) {
