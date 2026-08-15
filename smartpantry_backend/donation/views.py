@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 
 from .models import Donation
 from .serializers import DonationSerializer
@@ -15,7 +16,15 @@ class DonationViewSet(viewsets.ModelViewSet):
         return Donation.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(donor=self.request.user)
+        food_item = serializer.validated_data['food_item']
+
+        if food_item.is_donated:
+            raise ValidationError({"error": "This item has already been donated."})
+
+        donation = serializer.save(donor=self.request.user)
+
+        food_item.is_donated = True
+        food_item.save()
 
     @action(detail=True, methods=['post'])
     def claim(self, request, pk=None):

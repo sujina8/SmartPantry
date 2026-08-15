@@ -155,6 +155,7 @@ export default function Inventory() {
         pickup_info: donateForm.pickup_info,
       });
       setShowDonateModal(false);
+      fetchItems();
       setSuccess(`${donatingItem.name} was listed for donation!`);
       setTimeout(() => setSuccess(''), 3000);
     } catch {
@@ -286,7 +287,13 @@ export default function Inventory() {
                             {status === 'good' && <span className="sp-badge sp-badge-green">Good</span>}
                           </td>
                           <td>
-                            <button className="sp-icon-btn sp-icon-btn-donate" onClick={() => openDonateModal(item)}>Donate</button>
+                            <button
+                              className="sp-icon-btn sp-icon-btn-donate"
+                              disabled={item.is_donated}
+                              onClick={() => openDonateModal(item)}
+                              >
+                                {item.is_donated ? 'Donated' : 'Donate'}
+                              </button>
                             <button className="sp-icon-btn" onClick={() => openEditModal(item)}>Edit</button>
                             <button className="sp-icon-btn sp-icon-btn-delete" onClick={() => handleDelete(item.id)}>Delete</button>
                           </td>
