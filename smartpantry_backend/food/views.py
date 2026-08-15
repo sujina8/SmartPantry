@@ -34,7 +34,6 @@ class FoodItemViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        # Automatically set the user when creating a food item
         serializer.save(user=self.request.user)
 
     @action(detail=False, methods=['get'])

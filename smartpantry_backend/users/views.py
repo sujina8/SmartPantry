@@ -33,7 +33,7 @@ def register(request):
         password=password,
         full_name=full_name,
         household_size=household_size or 1,
-        is_verified=True,  # account usable immediately; 2FA happens at login instead
+        is_verified=True,
     )
     return Response({"message": "Registration successful. Please log in.", "user_id": user.id}, status=201)
 
@@ -49,7 +49,6 @@ def login(request):
     if user is None:
         return Response({"error": "Invalid email or password"}, status=401)
 
-    # Always require OTP at login (2FA)
     code, _token = user.generate_otp()
 
     send_mail(

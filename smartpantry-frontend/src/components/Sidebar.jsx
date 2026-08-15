@@ -6,7 +6,9 @@ const LINKS = [
   { to: '/inventory', label: 'My Inventory', key: 'inventory' },
   { to: '/donations', label: 'Donations', key: 'donations' },
   { to: '/notifications', label: 'Notifications', key: 'notifications' },
-  { to: '/settings', label: 'Settings', key: 'settings' }, // <-- Add this
+  { to: '/settings', label: 'Settings', key: 'settings' },
+  { to: '/analytics', label: 'Food Analytics', key: 'analytics' },
+  { to: '/mealplan', label: 'Meal Planner', key: 'mealplan' },
 ];
 
 export default function Sidebar({ active }) {
