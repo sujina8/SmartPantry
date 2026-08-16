@@ -40,6 +40,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email_notifications = models.BooleanField(default=True)
     push_notifications = models.BooleanField(default=True)
 
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 

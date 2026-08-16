@@ -30,6 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'full_name', 'phone_number',
             'household_size', 'is_2fa_enabled',
             'is_donations_public', 'email_notifications',
-            'push_notifications'
+            'push_notifications', 'profile_picture'
         ]
         read_only_fields = ['id', 'email']
