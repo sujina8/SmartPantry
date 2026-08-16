@@ -131,6 +131,9 @@ export default function BrowseDonations() {
                             <h4>{food?.name || 'Unnamed item'}</h4>
                             <p className="sp-donation-meta">Qty: {food?.quantity} {food?.unit}</p>
                             <p className="sp-donation-expiry">Expires: {food?.expiry_date}</p>
+                            <p className="sp-donation-donor">Donated by: {item.donor_full_name || item.donor_email}</p>
+                            <p className="sp-donation-contact">Contact: {item.donor_phone || 'Not provided'}</p>
+                            <p className="sp-donation-location">Location: {item.pickup_info || 'Not specified'}</p>
                             <button
                               className="sp-btn sp-btn-primary"
                               disabled={item.status === 'claimed'}
