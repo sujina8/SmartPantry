@@ -20,7 +20,15 @@ export default function Settings() {
 
     const saveSettings = async () => {
         try {
-             await api.patch("/auth/settings/", settings);
+            const data = new FormData();
+            Object.keys(settings).forEach((key) => {
+                const value = settings[key];
+                if (key === 'profile_picture' && typeof value === 'string') return;
+                if (value !== null && value !== undefined) {
+                    data.append(key, value);
+                }
+            });
+            await api.patch("/auth/settings/", data);
             alert("Settings updated successfully!");
         } catch (err) {
             console.error(err);
@@ -40,6 +48,36 @@ export default function Settings() {
                 </div>
 
                 <section className="sp-settings-card">
+                    <div className="sp-settings-item">
+                        <div>
+                            <h2>Profile</h2>
+                            <p>Update your name and profile picture.</p>
+                        </div>
+                    </div>
+                    <div className="sp-form-field">
+                        <label>Full Name</label>
+                        <input
+                            type="text"
+                            value={settings.full_name || ''}
+                            onChange={(e) => setSettings((s) => ({ ...s, full_name: e.target.value }))}
+                        />
+                    </div>
+                    <div className="sp-form-field">
+                        <label>Profile Picture</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setSettings((s) => ({ ...s, profile_picture: e.target.files[0] }))}
+                        />
+                        {settings.profile_picture && typeof settings.profile_picture === 'string' && (
+                            <img
+                                src={settings.profile_picture}
+                                alt="Current profile"
+                                style={{ marginTop: 8, width: 64, height: 64, objectFit: 'cover', borderRadius: '50%' }}
+                            />
+                        )}
+                    </div>
+
                     <div className="sp-settings-item">
                         <div>
                             <h2>Two-Factor Authentication</h2>
