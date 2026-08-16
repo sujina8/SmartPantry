@@ -14,6 +14,7 @@ import Sidebar from '../components/Sidebar'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend)
 
+// Matches FoodItem.CATEGORY_CHOICES in food/models.py
 const CATEGORY_LABELS = {
   vegetables: 'Vegetables',
   fruits: 'Fruits',
@@ -34,18 +35,22 @@ export default function Analytics() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
 
   useEffect(() => {
-    API.get('/analytics/')
+    setLoading(true)
+    const query = categoryFilter ? `?category=${categoryFilter}` : ''
+    API.get(`/analytics/${query}`)
       .then((res) => setData(res.data))
       .catch(() => setError('Failed to load analytics'))
       .finally(() => setLoading(false))
-  }, [])
+  }, [categoryFilter])
 
   if (loading) return <p style={{ padding: 48 }}>Loading analytics...</p>
 
   const weeklyTrend = data?.weekly_trend || []
   const categoryBreakdown = data?.category_breakdown || []
+  const hasAnyActivity = (data?.total_items ?? 0) > 0 || (data?.total_donated ?? 0) > 0
 
   const barData = {
     labels: weeklyTrend.map((w) => w.week),
@@ -84,45 +89,72 @@ export default function Analytics() {
 
           {error && <p className="error">{error}</p>}
 
-          <section className="sp-dash-section">
-            <h2 className="sp-dash-heading">Summary</h2>
-            <div className="sp-stat-cards">
-              <div className="sp-stat-card">
-                <p className="sp-stat-label">Items Tracked</p>
-                <p className="sp-stat-value">{data?.total_items ?? 0}</p>
+          {!hasAnyActivity && !categoryFilter ? (
+            <section className="sp-dash-section" style={{ textAlign: 'center' }}>
+              <p className="sp-dash-empty">
+                You haven't logged any food-saving activity yet. Add items to your Inventory or make your first donation to start tracking your impact here.
+              </p>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 16 }}>
+                <a href="/inventory" className="sp-btn sp-btn-secondary">Go to Inventory</a>
+                <a href="/donations" className="sp-btn sp-btn-primary">Browse Donations</a>
               </div>
-              <div className="sp-stat-card">
-                <p className="sp-stat-label">Total Donations</p>
-                <p className="sp-stat-value">{data?.total_donated ?? 0}</p>
-              </div>
-              <div className="sp-stat-card">
-                <p className="sp-stat-label">Expiring Soon</p>
-                <p className="sp-stat-value">{data?.expiring_soon ?? 0}</p>
-              </div>
-            </div>
-          </section>
+            </section>
+          ) : (
+            <>
+              <section className="sp-dash-section">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+                  <h2 className="sp-dash-heading" style={{ margin: 0 }}>Summary</h2>
+                  <div className="sp-form-field" style={{ minWidth: 200, margin: 0 }}>
+                    <select
+                      value={categoryFilter}
+                      onChange={(e) => setCategoryFilter(e.target.value)}
+                    >
+                      <option value="">All Categories</option>
+                      {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+                        <option key={key} value={key}>{label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="sp-stat-cards">
+                  <div className="sp-stat-card">
+                    <p className="sp-stat-label">Items Tracked</p>
+                    <p className="sp-stat-value">{data?.total_items ?? 0}</p>
+                  </div>
+                  <div className="sp-stat-card">
+                    <p className="sp-stat-label">Total Donations</p>
+                    <p className="sp-stat-value">{data?.total_donated ?? 0}</p>
+                  </div>
+                  <div className="sp-stat-card">
+                    <p className="sp-stat-label">Expiring Soon</p>
+                    <p className="sp-stat-value">{data?.expiring_soon ?? 0}</p>
+                  </div>
+                </div>
+              </section>
 
-          <section className="sp-dash-section">
-            <h2 className="sp-dash-heading">Analytics Charts</h2>
-            <div className="sp-dash-panels">
-              <div className="sp-dash-panel">
-                <p className="sp-chart-title">Donations Per Week</p>
-                {weeklyTrend.length === 0 ? (
-                  <p className="sp-dash-empty">No donation activity yet.</p>
-                ) : (
-                  <Bar data={barData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
-                )}
-              </div>
-              <div className="sp-dash-panel">
-                <p className="sp-chart-title">Donation Categories</p>
-                {categoryBreakdown.length === 0 ? (
-                  <p className="sp-dash-empty">No donations yet.</p>
-                ) : (
-                  <Pie data={pieData} options={{ responsive: true }} />
-                )}
-              </div>
-            </div>
-          </section>
+              <section className="sp-dash-section">
+                <h2 className="sp-dash-heading">Analytics Charts</h2>
+                <div className="sp-dash-panels">
+                  <div className="sp-dash-panel">
+                    <p className="sp-chart-title">Donations Per Week</p>
+                    {weeklyTrend.length === 0 ? (
+                      <p className="sp-dash-empty">No donation activity yet{categoryFilter ? ' for this category' : ''}.</p>
+                    ) : (
+                      <Bar data={barData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
+                    )}
+                  </div>
+                  <div className="sp-dash-panel">
+                    <p className="sp-chart-title">Donation Categories</p>
+                    {categoryBreakdown.length === 0 ? (
+                      <p className="sp-dash-empty">No donations yet{categoryFilter ? ' for this category' : ''}.</p>
+                    ) : (
+                      <Pie data={pieData} options={{ responsive: true }} />
+                    )}
+                  </div>
+                </div>
+              </section>
+            </>
+          )}
         </main>
       </div>
     </div>

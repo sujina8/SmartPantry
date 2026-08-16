@@ -65,6 +65,9 @@ const Dashboard = () => {
                     <p className="sp-stat-value">{inventory.length}</p>
                   </div>
                 </div>
+                <Link to="/analytics" className="sp-btn sp-btn-secondary sp-dash-link" style={{ marginTop: 16, maxWidth: 220 }}>
+                  Track My Impact
+                </Link>
               </section>
 
               <div className="sp-dash-panels">

@@ -13,8 +13,15 @@ class AnalyticsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        category = request.query_params.get('category')
+
         total_items = FoodItem.objects.filter(user=request.user).count()
-        total_donated = Donation.objects.filter(donor=request.user).count()
+
+        donation_qs = Donation.objects.filter(donor=request.user)
+        if category:
+            donation_qs = donation_qs.filter(food_item__category=category)
+
+        total_donated = donation_qs.count()
 
         soon = timezone.now().date() + timedelta(days=3)
         expiring_soon = FoodItem.objects.filter(
@@ -23,7 +30,7 @@ class AnalyticsView(APIView):
         ).count()
 
         weekly_qs = (
-            Donation.objects.filter(donor=request.user)
+            donation_qs
             .annotate(week=TruncWeek('created_at'))
             .values('week')
             .annotate(count=Count('id'))
@@ -35,7 +42,7 @@ class AnalyticsView(APIView):
         ]
 
         category_qs = (
-            Donation.objects.filter(donor=request.user)
+            donation_qs
             .values('food_item__category')
             .annotate(count=Count('id'))
             .order_by('-count')
