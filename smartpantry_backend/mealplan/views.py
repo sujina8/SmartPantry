@@ -2,7 +2,10 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from food.models import FoodItem
+from notification.models import Notification
 from .models import MealPlan
 from .serializers import MealPlanSerializer
 
@@ -58,12 +61,31 @@ class MealPlanViewSet(viewsets.ModelViewSet):
     serializer_class = MealPlanSerializer
 
     def get_queryset(self):
-        # Users can only see their own meal plans
         return MealPlan.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        # Automatically set the user when creating a meal plan
-        serializer.save(user=self.request.user)
+        meal_plan = serializer.save(user=self.request.user)
+
+        notification = Notification.objects.create(
+            user=self.request.user,
+            notification_type='meal',
+            title=f'{meal_plan.meal_name} added to your plan',
+            message=f'{meal_plan.get_meal_type_display()} on {meal_plan.date} — {meal_plan.meal_name} is on your meal plan.'
+        )
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'notifications_{self.request.user.id}',
+            {
+                'type': 'send_notification',
+                'id': notification.id,
+                'title': notification.title,
+                'message': notification.message,
+                'notification_type': notification.notification_type,
+                'created_at': notification.created_at.isoformat(),
+                'is_read': notification.is_read,
+            }
+        )
 
     @action(detail=False, methods=['get'])
     def suggestions(self, request):
@@ -80,7 +102,7 @@ class MealPlanViewSet(viewsets.ModelViewSet):
         for recipe in RECIPE_LIBRARY:
             matched = [ing for ing in recipe['ingredients'] if _ingredient_owned(ing, owned_names)]
             if not matched:
-                continue  # skip recipes the user can't currently make any part of
+                continue
 
             uses_expiring = any(_ingredient_owned(ing, expiring_names) for ing in recipe['ingredients'])
 
@@ -94,7 +116,6 @@ class MealPlanViewSet(viewsets.ModelViewSet):
                 'uses_expiring_item': uses_expiring,
             })
 
-        # Prioritize: uses an expiring item first, then by how complete the match is
         results.sort(
             key=lambda r: (not r['uses_expiring_item'], -(r['matched_count'] / r['total_ingredients']))
         )
