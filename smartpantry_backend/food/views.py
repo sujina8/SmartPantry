@@ -7,6 +7,7 @@ from datetime import timedelta
 from .models import FoodItem
 from .serializers import FoodItemSerializer
 
+
 class FoodItemViewSet(viewsets.ModelViewSet):
     # Only authenticated users can access inventory
     permission_classes = [IsAuthenticated]
@@ -59,3 +60,11 @@ class FoodItemViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(items, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def mark_used(self, request, pk=None):
+        item = self.get_object()
+        item.is_used = True
+        item.used_at = timezone.now()
+        item.save()
+        return Response({"message": "Item marked as used"})

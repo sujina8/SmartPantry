@@ -4,7 +4,6 @@ from datetime import date, timedelta
 
 
 class FoodItem(models.Model):
-    # Food category choices
     CATEGORY_CHOICES = [
         ('vegetables', 'Vegetables'),
         ('fruits', 'Fruits'),
@@ -23,7 +22,6 @@ class FoodItem(models.Model):
         ('counter', 'Counter'),
     ]
 
-    # User who owns the food item
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -46,6 +44,8 @@ class FoodItem(models.Model):
     expiry_date = models.DateField()
     notes = models.TextField(blank=True)
     is_donated = models.BooleanField(default=False)
+    is_used = models.BooleanField(default=False)
+    used_at = models.DateTimeField(blank=True, null=True)
     image = models.ImageField(upload_to='food_images/', blank=True, null=True)
 
     date_added = models.DateTimeField(auto_now_add=True)
@@ -59,8 +59,5 @@ class FoodItem(models.Model):
 
     @property
     def is_expiring_soon(self):
-        """
-        Returns True if the food item expires within the next 3 days.
-        """
         today = date.today()
         return today <= self.expiry_date <= today + timedelta(days=3)

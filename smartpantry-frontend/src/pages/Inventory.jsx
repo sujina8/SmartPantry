@@ -133,6 +133,14 @@ export default function Inventory() {
       setError('Failed to delete item');
     }
   };
+  const handleMarkUsed = async (id) => {
+  try {
+    await api.post(`/inventory/${id}/mark_used/`);
+    fetchItems();
+  } catch {
+    alert('Failed to mark item as used.');
+  }
+};
 
   const openDonateModal = (item) => {
     setDonatingItem(item);
@@ -292,8 +300,15 @@ export default function Inventory() {
                               disabled={item.is_donated}
                               onClick={() => openDonateModal(item)}
                             >
-  {item.is_donated ? 'Donated' : (status === 'expiring' ? 'Convert to Donation' : 'Donate')}
-</button>
+                              {item.is_donated ? 'Donated' : (status === 'expiring' ? 'Convert to Donation' : 'Donate')}
+                            </button>
+                            <button
+                              className="sp-icon-btn"
+                              disabled={item.is_used || item.is_donated}
+                              onClick={() => handleMarkUsed(item.id)}
+                            >
+                              {item.is_used ? 'Used' : 'Mark Used'}
+                            </button>
                             <button className="sp-icon-btn" onClick={() => openEditModal(item)}>Edit</button>
                             <button className="sp-icon-btn sp-icon-btn-delete" onClick={() => handleDelete(item.id)}>Delete</button>
                           </td>
