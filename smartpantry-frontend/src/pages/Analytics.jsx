@@ -14,7 +14,6 @@ import Sidebar from '../components/Sidebar'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend)
 
-// Matches FoodItem.CATEGORY_CHOICES in food/models.py
 const CATEGORY_LABELS = {
   vegetables: 'Vegetables',
   fruits: 'Fruits',
@@ -49,8 +48,12 @@ export default function Analytics() {
   if (loading) return <p style={{ padding: 48 }}>Loading analytics...</p>
 
   const weeklyTrend = data?.weekly_trend || []
+  const itemsLoggedTrend = data?.items_logged_trend || []
   const categoryBreakdown = data?.category_breakdown || []
-  const hasAnyActivity = (data?.total_items ?? 0) > 0 || (data?.total_donated ?? 0) > 0
+  const hasAnyActivity =
+    (data?.total_items ?? 0) > 0 ||
+    (data?.total_donated ?? 0) > 0 ||
+    (data?.items_used ?? 0) > 0
 
   const barData = {
     labels: weeklyTrend.map((w) => w.week),
@@ -59,6 +62,18 @@ export default function Analytics() {
         label: 'Donations',
         data: weeklyTrend.map((w) => w.count),
         backgroundColor: '#2d6a4f',
+        borderRadius: 6,
+      },
+    ],
+  }
+
+  const itemsLoggedData = {
+    labels: itemsLoggedTrend.map((w) => w.week),
+    datasets: [
+      {
+        label: 'Items Logged',
+        data: itemsLoggedTrend.map((w) => w.count),
+        backgroundColor: '#c9a227',
         borderRadius: 6,
       },
     ],
@@ -122,6 +137,10 @@ export default function Analytics() {
                     <p className="sp-stat-value">{data?.total_items ?? 0}</p>
                   </div>
                   <div className="sp-stat-card">
+                    <p className="sp-stat-label">Items Used</p>
+                    <p className="sp-stat-value">{data?.items_used ?? 0}</p>
+                  </div>
+                  <div className="sp-stat-card">
                     <p className="sp-stat-label">Total Donations</p>
                     <p className="sp-stat-value">{data?.total_donated ?? 0}</p>
                   </div>
@@ -135,6 +154,14 @@ export default function Analytics() {
               <section className="sp-dash-section">
                 <h2 className="sp-dash-heading">Analytics Charts</h2>
                 <div className="sp-dash-panels">
+                  <div className="sp-dash-panel">
+                    <p className="sp-chart-title">Items Logged Per Week</p>
+                    {itemsLoggedTrend.length === 0 ? (
+                      <p className="sp-dash-empty">No inventory activity yet.</p>
+                    ) : (
+                      <Bar data={itemsLoggedData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
+                    )}
+                  </div>
                   <div className="sp-dash-panel">
                     <p className="sp-chart-title">Donations Per Week</p>
                     {weeklyTrend.length === 0 ? (

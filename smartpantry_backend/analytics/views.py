@@ -16,6 +16,7 @@ class AnalyticsView(APIView):
         category = request.query_params.get('category')
 
         total_items = FoodItem.objects.filter(user=request.user).count()
+        items_used = FoodItem.objects.filter(user=request.user, is_used=True).count()
 
         donation_qs = Donation.objects.filter(donor=request.user)
         if category:
@@ -41,6 +42,19 @@ class AnalyticsView(APIView):
             for entry in weekly_qs
         ]
 
+        # Items logged per week (general inventory activity, not just donations)
+        items_logged_qs = (
+            FoodItem.objects.filter(user=request.user)
+            .annotate(week=TruncWeek('date_added'))
+            .values('week')
+            .annotate(count=Count('id'))
+            .order_by('week')
+        )
+        items_logged_trend = [
+            {'week': entry['week'].strftime('%Y-%m-%d'), 'count': entry['count']}
+            for entry in items_logged_qs
+        ]
+
         category_qs = (
             donation_qs
             .values('food_item__category')
@@ -54,8 +68,10 @@ class AnalyticsView(APIView):
 
         return Response({
             'total_items': total_items,
+            'items_used': items_used,
             'total_donated': total_donated,
             'expiring_soon': expiring_soon,
             'weekly_trend': weekly_trend,
+            'items_logged_trend': items_logged_trend,
             'category_breakdown': category_breakdown,
         })
