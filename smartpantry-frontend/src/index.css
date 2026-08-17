@@ -1671,3 +1671,5 @@ body {
 .sp-badge-suggestion.expiring {
   background: #fdecea; color: var(--sp-red, #b5543a);
 }
+.sp-badge-blue { background: #e3edf7; color: #2c5f8a; }
+.sp-badge-grey { background: #eceeec; color: #5c6b62; }

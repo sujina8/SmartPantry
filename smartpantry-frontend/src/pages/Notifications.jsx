@@ -1,13 +1,23 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import useWebSocket from '../hooks/useWebSocket'
 import Sidebar from '../components/Sidebar'
+
+// Matches Notification.TYPE_CHOICES in notification/models.py
+const TYPE_META = {
+  expiry: { label: 'Inventory Alert', badgeClass: 'sp-badge-amber', route: '/inventory' },
+  donation: { label: 'Donation Update', badgeClass: 'sp-badge-green', route: '/donations' },
+  meal: { label: 'Meal Reminder', badgeClass: 'sp-badge-blue', route: '/mealplan' },
+  system: { label: 'System', badgeClass: 'sp-badge-grey', route: null },
+}
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const { lastMessage, isConnected } = useWebSocket('ws/notifications/')
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchNotifications()
@@ -53,6 +63,11 @@ const Notifications = () => {
     }
   }
 
+  const handleNotificationClick = (n) => {
+    const route = TYPE_META[n.notification_type]?.route
+    if (route) navigate(route)
+  }
+
   const timeAgo = (dateStr) => {
     const diffMs = Date.now() - new Date(dateStr).getTime()
     const hours = Math.floor(diffMs / (1000 * 60 * 60))
@@ -92,24 +107,40 @@ const Notifications = () => {
           {error && <p className="error">{error}</p>}
 
           {notifications.length === 0 ? (
-            <p className="sp-dash-empty">No notifications yet.</p>
+            <p className="sp-dash-empty">No new notifications</p>
           ) : (
             <div className="sp-notif-feed">
-              {notifications.map((n) => (
-                <div key={n.id} className={`sp-notif-row ${!n.is_read ? 'unread' : ''}`}>
-                  <div className="sp-notif-dot" />
-                  <div className="sp-notif-content">
-                    <p className="sp-notif-title">{n.title}</p>
-                    <p className="sp-notif-message">{n.message}</p>
+              {notifications.map((n) => {
+                const meta = TYPE_META[n.notification_type] || TYPE_META.system
+                return (
+                  <div
+                    key={n.id}
+                    className={`sp-notif-row ${!n.is_read ? 'unread' : ''}`}
+                    onClick={() => handleNotificationClick(n)}
+                    style={{ cursor: meta.route ? 'pointer' : 'default' }}
+                  >
+                    <div className="sp-notif-dot" />
+                    <div className="sp-notif-content">
+                      <span className={`sp-badge ${meta.badgeClass}`} style={{ marginBottom: 6, display: 'inline-block' }}>
+                        {meta.label}
+                      </span>
+                      <p className="sp-notif-title">{n.title}</p>
+                      <p className="sp-notif-message">{n.message}</p>
+                    </div>
+                    <div className="sp-notif-meta">
+                      <span className="sp-notif-time">{timeAgo(n.created_at)}</span>
+                      {!n.is_read && (
+                        <button
+                          className="sp-icon-btn"
+                          onClick={(e) => { e.stopPropagation(); handleMarkRead(n.id); }}
+                        >
+                          Mark read
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div className="sp-notif-meta">
-                    <span className="sp-notif-time">{timeAgo(n.created_at)}</span>
-                    {!n.is_read && (
-                      <button className="sp-icon-btn" onClick={() => handleMarkRead(n.id)}>Mark read</button>
-                    )}
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </main>
