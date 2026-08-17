@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Sidebar from '../components/Sidebar';
 
-const CATEGORIES = ['Fresh', 'Canned', 'Frozen', 'Dairy'];
+const CATEGORY_OPTIONS = [
+  { value: 'vegetables', label: 'Vegetables' },
+  { value: 'fruits', label: 'Fruits' },
+  { value: 'dairy', label: 'Dairy' },
+  { value: 'meat', label: 'Meat' },
+  { value: 'grains', label: 'Grains' },
+  { value: 'beverages', label: 'Beverages' },
+  { value: 'snacks', label: 'Snacks' },
+  { value: 'others', label: 'Others' },
+];
 
 export default function BrowseDonations() {
+  const navigate = useNavigate();
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [checkedCategories, setCheckedCategories] = useState([]);
   const [location, setLocation] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedDonation, setSelectedDonation] = useState(null);
 
   useEffect(() => {
     api.get('/donations/')
@@ -41,12 +53,16 @@ export default function BrowseDonations() {
 };
 
   const filteredDonations = donations.filter((item) => {
-    const category = item.food_item_detail?.category || '';
+    const category = (item.food_item_detail?.category || '').toLowerCase();
     const categoryMatch = checkedCategories.length === 0 || checkedCategories.includes(category);
     const locationText = `${item.pickup_info || ''} ${item.food_item_detail?.location || ''}`.toLowerCase();
     const locationMatch = !location || locationText.includes(location.toLowerCase());
     return categoryMatch && locationMatch;
   });
+
+  const openDetails = (item) => {
+    setSelectedDonation(item);
+  };
 
   return (
     <div className="sp-donations">
@@ -66,15 +82,15 @@ export default function BrowseDonations() {
 
               <div className="sp-filter-group">
                 <label>Categories</label>
-                {CATEGORIES.map((cat) => (
-                  <div className="sp-checkbox-row" key={cat}>
+                {CATEGORY_OPTIONS.map((cat) => (
+                  <div className="sp-checkbox-row" key={cat.value}>
                     <input
                       type="checkbox"
-                      id={`cat-${cat}`}
-                      checked={checkedCategories.includes(cat)}
-                      onChange={() => toggleCategory(cat)}
+                      id={`cat-${cat.value}`}
+                      checked={checkedCategories.includes(cat.value)}
+                      onChange={() => toggleCategory(cat.value)}
                     />
-                    <label htmlFor={`cat-${cat}`} style={{ fontWeight: 400, margin: 0 }}>{cat}</label>
+                    <label htmlFor={`cat-${cat.value}`} style={{ fontWeight: 400, margin: 0 }}>{cat.label}</label>
                   </div>
                 ))}
               </div>
@@ -99,6 +115,8 @@ export default function BrowseDonations() {
             <section>
               {loading ? (
                 <p>Loading donations...</p>
+              ) : filteredDonations.length === 0 ? (
+                <p className="sp-dash-empty">No items found. Please adjust your filters</p>
               ) : (
                 <>
                   <p className="sp-donations-count">Showing {filteredDonations.length} items</p>
@@ -108,23 +126,15 @@ export default function BrowseDonations() {
                       return (
                         <div className="sp-donation-card" key={item.id}>
                           <div className="sp-donation-image">
-                            <div className="sp-donation-image">
-  <span className="sp-donation-tag">
-    {food?.category}
-  </span>
-
-  {food?.image ? (
-    <img
-      src={food.image}
-      alt={food.name}
-      className="sp-donation-img"
-    />
-  ) : (
-    <div className="sp-no-image">
-      No image
-    </div>
-  )}
-</div>
+                            {food?.image ? (
+                              <img
+                                src={food.image}
+                                alt={food.name}
+                                className="sp-donation-img"
+                              />
+                            ) : (
+                              <div className="sp-no-image">No image</div>
+                            )}
                             <span className="sp-donation-tag">{food?.category}</span>
                           </div>
                           <div className="sp-donation-body">
@@ -132,15 +142,15 @@ export default function BrowseDonations() {
                             <p className="sp-donation-meta">Qty: {food?.quantity} {food?.unit}</p>
                             <p className="sp-donation-expiry">Expires: {food?.expiry_date}</p>
                             <p className="sp-donation-donor">Donated by: {item.donor_full_name || item.donor_email}</p>
-                            <p className="sp-donation-contact">Contact: {item.donor_phone || 'Not provided'}</p>
+                            <p className="sp-donation-contact">Contact: {item.donor_contact || item.donor_phone || item.donor_email || 'Not provided'}</p>
                             <p className="sp-donation-location">Location: {item.pickup_info || 'Not specified'}</p>
-                            <button
-                              className="sp-btn sp-btn-primary"
-                              disabled={item.status === 'claimed'}
-                              onClick={() => handleClaim(item.id)}
-                            >
-                              {item.status === 'claimed' ? 'Claimed' : 'Claim'}
-                            </button>
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
+                              <button className="sp-btn sp-btn-secondary" onClick={() => openDetails(item)}>View details</button>
+                              <button className="sp-btn sp-btn-primary" disabled={item.status === 'claimed'} onClick={() => handleClaim(item.id)}>
+                                {item.status === 'claimed' ? 'Claimed' : 'Claim'}
+                              </button>
+                              <button className="sp-btn sp-btn-secondary" onClick={() => navigate('/mealplan')}>Plan meal</button>
+                            </div>
                           </div>
                         </div>
                       );
@@ -159,6 +169,46 @@ export default function BrowseDonations() {
           </div>
         </main>
       </div>
+
+      {selectedDonation && (
+        <div className="sp-modal-overlay" onClick={() => setSelectedDonation(null)}>
+          <div className="sp-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>{selectedDonation.food_item_detail?.name || 'Food item details'}</h3>
+            <div className="sp-modal-grid">
+              <div className="sp-form-field">
+                <label>Category</label>
+                <input value={selectedDonation.food_item_detail?.category || ''} readOnly />
+              </div>
+              <div className="sp-form-field">
+                <label>Storage</label>
+                <input value={selectedDonation.food_item_detail?.storage_location || 'Not specified'} readOnly />
+              </div>
+              <div className="sp-form-field">
+                <label>Quantity</label>
+                <input value={`${selectedDonation.food_item_detail?.quantity || ''} ${selectedDonation.food_item_detail?.unit || ''}`} readOnly />
+              </div>
+              <div className="sp-form-field">
+                <label>Expiry Date</label>
+                <input value={selectedDonation.food_item_detail?.expiry_date || ''} readOnly />
+              </div>
+              <div className="sp-form-field" style={{ gridColumn: '1 / -1' }}>
+                <label>Pickup Info</label>
+                <textarea value={selectedDonation.pickup_info || 'Not specified'} readOnly />
+              </div>
+              <div className="sp-form-field" style={{ gridColumn: '1 / -1' }}>
+                <label>Contact</label>
+                <input value={selectedDonation.donor_contact || selectedDonation.donor_phone || selectedDonation.donor_email || 'Not provided'} readOnly />
+              </div>
+            </div>
+            <div className="sp-register-actions">
+              <button type="button" className="sp-btn sp-btn-secondary" onClick={() => setSelectedDonation(null)}>Close</button>
+              <button type="button" className="sp-btn sp-btn-primary" onClick={() => handleClaim(selectedDonation.id)} disabled={selectedDonation.status === 'claimed'}>
+                {selectedDonation.status === 'claimed' ? 'Claimed' : 'Claim item'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

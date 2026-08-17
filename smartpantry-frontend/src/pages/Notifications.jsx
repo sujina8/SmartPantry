@@ -63,7 +63,10 @@ const Notifications = () => {
     }
   }
 
-  const handleNotificationClick = (n) => {
+  const handleNotificationClick = async (n) => {
+    if (!n.is_read) {
+      await handleMarkRead(n.id)
+    }
     const route = TYPE_META[n.notification_type]?.route
     if (route) navigate(route)
   }

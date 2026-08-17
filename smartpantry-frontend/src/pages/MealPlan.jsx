@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import API from '../services/api'
 import Sidebar from '../components/Sidebar'
 
@@ -27,6 +28,7 @@ function getCurrentWeekDates() {
 
 export default function MealPlan() {
   const weekDates = getCurrentWeekDates()
+  const location = useLocation()
 
   const [meals, setMeals] = useState([])
   const [suggestions, setSuggestions] = useState([])
@@ -40,6 +42,7 @@ export default function MealPlan() {
   const [modalMealType, setModalMealType] = useState('breakfast')
   const [modalMealName, setModalMealName] = useState('')
   const [modalNotes, setModalNotes] = useState('')
+  const [prefillHandled, setPrefillHandled] = useState(false)
 
   useEffect(() => {
     loadMeals()
@@ -126,6 +129,15 @@ export default function MealPlan() {
   const addSuggestionToPlan = (suggestion) => {
     openAddModal(weekDates[0], suggestion.meal_type, suggestion.name)
   }
+
+  useEffect(() => {
+    if (prefillHandled) return
+    const prefillMealName = location.state?.prefillMealName
+    if (prefillMealName) {
+      openAddModal(weekDates[0], 'dinner', prefillMealName)
+      setPrefillHandled(true)
+    }
+  }, [location.state, prefillHandled, weekDates])
 
   if (loading) return <p style={{ padding: 48 }}>Loading meal plan...</p>
 

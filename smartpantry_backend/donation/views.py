@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
+from django.utils import timezone
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
@@ -16,13 +17,23 @@ class DonationViewSet(viewsets.ModelViewSet):
     serializer_class = DonationSerializer
 
     def get_queryset(self):
-        return Donation.objects.all()
+        today = timezone.now().date()
+        queryset = Donation.objects.filter(food_item__expiry_date__gte=today)
+
+        if getattr(self, 'action', None) == 'list':
+            queryset = queryset.filter(status='available')
+
+        return queryset
 
     def perform_create(self, serializer):
         food_item = serializer.validated_data['food_item']
+        today = timezone.now().date()
 
         if food_item.is_donated:
             raise ValidationError({"error": "This item has already been donated."})
+
+        if food_item.expiry_date < today:
+            raise ValidationError({"error": "Expired food items cannot be donated."})
 
         donation = serializer.save(donor=self.request.user)
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import Sidebar from '../components/Sidebar';
 
@@ -26,6 +27,7 @@ function getStatus(item) {
 }
 
 export default function Inventory() {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -41,8 +43,12 @@ export default function Inventory() {
   const [donateForm, setDonateForm] = useState(emptyDonateForm);
   const [donateError, setDonateError] = useState('');
 
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [storageFilter, setStorageFilter] = useState('all');
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -91,7 +97,7 @@ export default function Inventory() {
       storage_location: item.storage_location,
       expiry_date: item.expiry_date,
       notes: item.notes || '',
-      image: null, // only set if user picks a new file; existing image stays unless replaced
+      image: null, // 
     });
     setImagePreview(item.image || null);
     setShowModal(true);
@@ -133,14 +139,6 @@ export default function Inventory() {
       setError('Failed to delete item');
     }
   };
-  const handleMarkUsed = async (id) => {
-  try {
-    await api.post(`/inventory/${id}/mark_used/`);
-    fetchItems();
-  } catch {
-    alert('Failed to mark item as used.');
-  }
-};
 
   const openDonateModal = (item) => {
     setDonatingItem(item);
@@ -163,7 +161,6 @@ export default function Inventory() {
         pickup_info: donateForm.pickup_info,
       });
       setShowDonateModal(false);
-      fetchItems();
       setSuccess(`${donatingItem.name} was listed for donation!`);
       setTimeout(() => setSuccess(''), 3000);
     } catch {
@@ -173,12 +170,29 @@ export default function Inventory() {
 
   const filteredItems = items.filter((item) => {
     if (categoryFilter !== 'all' && item.category !== categoryFilter) return false;
+    if (storageFilter !== 'all' && item.storage_location !== storageFilter) return false;
     const status = getStatus(item);
     if (statusFilter === 'expiring' && status !== 'expiring') return false;
     if (statusFilter === 'expired' && status !== 'expired') return false;
     if (search && !item.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
+
+  const showDetails = (item) => {
+    setSelectedItem(item);
+    setShowDetailsModal(true);
+  };
+
+  const handleMarkUsed = async (id) => {
+    try {
+      await API.post(`/inventory/${id}/mark_used/`);
+      setSuccess('Food item marked as used!');
+      setTimeout(() => setSuccess(''), 3000);
+      fetchItems();
+    } catch {
+      setError('Failed to mark this item as used.');
+    }
+  };
 
   if (loading) return <p style={{ padding: 48 }}>Loading inventory...</p>;
 
@@ -235,6 +249,21 @@ export default function Inventory() {
               </div>
 
               <div className="sp-filter-group">
+                <label>Storage Type</label>
+                <div className="sp-pill-row">
+                  {['all', ...STORAGE_LOCATIONS].map((storage) => (
+                    <button
+                      key={storage}
+                      className={`sp-pill ${storageFilter === storage ? 'active' : ''}`}
+                      onClick={() => setStorageFilter(storage)}
+                    >
+                      {storage === 'all' ? 'All' : storage.charAt(0).toUpperCase() + storage.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="sp-filter-group">
                 <label htmlFor="search">Search</label>
                 <input
                   id="search"
@@ -248,7 +277,7 @@ export default function Inventory() {
 
             <section>
               {filteredItems.length === 0 ? (
-                <p className="sp-dash-empty">No food items match your filters.</p>
+                <p className="sp-dash-empty">No items found. Please adjust your filters</p>
               ) : (
                 <table className="sp-inventory-table">
                   <thead>
@@ -295,19 +324,14 @@ export default function Inventory() {
                             {status === 'good' && <span className="sp-badge sp-badge-green">Good</span>}
                           </td>
                           <td>
-                            <button
-                              className="sp-icon-btn sp-icon-btn-donate"
-                              disabled={item.is_donated}
-                              onClick={() => openDonateModal(item)}
-                            >
-                              {item.is_donated ? 'Donated' : (status === 'expiring' ? 'Convert to Donation' : 'Donate')}
-                            </button>
+                            <button className="sp-icon-btn" onClick={() => showDetails(item)}>View</button>
+                            <button className="sp-icon-btn sp-icon-btn-donate" onClick={() => openDonateModal(item)}>Donate</button>
+                            <button className="sp-icon-btn" onClick={() => handleMarkUsed(item.id)}>Mark Used</button>
                             <button
                               className="sp-icon-btn"
-                              disabled={item.is_used || item.is_donated}
-                              onClick={() => handleMarkUsed(item.id)}
+                              onClick={() => navigate('/mealplan', { state: { prefillMealName: item.name } })}
                             >
-                              {item.is_used ? 'Used' : 'Mark Used'}
+                              Plan Meal
                             </button>
                             <button className="sp-icon-btn" onClick={() => openEditModal(item)}>Edit</button>
                             <button className="sp-icon-btn sp-icon-btn-delete" onClick={() => handleDelete(item.id)}>Delete</button>
@@ -421,6 +445,40 @@ export default function Inventory() {
                 <button type="submit" className="sp-btn sp-btn-primary">List for Donation</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showDetailsModal && selectedItem && (
+        <div className="sp-modal-overlay" onClick={() => setShowDetailsModal(false)}>
+          <div className="sp-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>{selectedItem.name}</h3>
+            <div className="sp-modal-grid">
+              <div className="sp-form-field">
+                <label>Category</label>
+                <input value={selectedItem.category || ''} readOnly />
+              </div>
+              <div className="sp-form-field">
+                <label>Storage Location</label>
+                <input value={selectedItem.storage_location || ''} readOnly />
+              </div>
+              <div className="sp-form-field">
+                <label>Quantity</label>
+                <input value={`${selectedItem.quantity || ''} ${selectedItem.unit || ''}`} readOnly />
+              </div>
+              <div className="sp-form-field">
+                <label>Expiry Date</label>
+                <input value={selectedItem.expiry_date || ''} readOnly />
+              </div>
+              <div className="sp-form-field" style={{ gridColumn: '1 / -1' }}>
+                <label>Notes</label>
+                <textarea value={selectedItem.notes || 'No notes provided.'} readOnly />
+              </div>
+            </div>
+            <div className="sp-register-actions">
+              <button type="button" className="sp-btn sp-btn-secondary" onClick={() => setShowDetailsModal(false)}>Close</button>
+              <button type="button" className="sp-btn sp-btn-primary" onClick={() => handleMarkUsed(selectedItem.id)}>Mark as Used</button>
+            </div>
           </div>
         </div>
       )}
