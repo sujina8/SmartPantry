@@ -45,6 +45,48 @@ test('ST1: user registration with 2FA enabled', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
 })
 
+test('ST2A: login without 2FA skips OTP flow', async ({ page }) => {
+  await page.route(`${API_BASE}/auth/login/`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        access: 'access-token',
+        refresh: 'refresh-token',
+        user: {
+          full_name: 'Test User',
+          email: 'test.user@example.com',
+        },
+      }),
+    })
+  })
+
+  await page.route(`${API_BASE}/inventory/`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([]),
+    })
+  })
+
+  await page.route(`${API_BASE}/donations/`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([]),
+    })
+  })
+
+  await page.goto('/login')
+  await page.locator('#email').fill('test.user@example.com')
+  await page.locator('#password').fill('Password123!')
+  await page.getByRole('button', { name: 'Login' }).click()
+
+  await page.waitForURL('**/dashboard')
+  await expect(page.getByRole('heading', { name: /Welcome back/i })).toBeVisible()
+  await expect(page.getByLabel('6-digit code')).toHaveCount(0)
+})
+
 test('ST2: login with valid credentials and OTP verification', async ({ page }) => {
   await page.route(`${API_BASE}/auth/login/`, async (route) => {
     await route.fulfill({
@@ -280,7 +322,94 @@ test('ST6: browse a donation and claim it', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Claimed' })).toBeVisible()
 })
 
-test('ST7: filter donations by category', async ({ page }) => {
+test('ST7: privacy settings toggle saves correctly', async ({ page }) => {
+  await setAuthState(page)
+
+  await page.route(`${API_BASE}/auth/settings/`, async (route) => {
+    const method = route.request().method()
+
+    if (method === 'GET') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          full_name: 'Test User',
+          email: 'test.user@example.com',
+          is_2fa_enabled: false,
+          is_donations_public: true,
+          email_notifications: true,
+          push_notifications: true,
+        }),
+      })
+      return
+    }
+
+    if (method === 'PATCH') {
+      const body = route.request().postData()
+      expect(body).toMatch(/name="is_donations_public"[\s\S]*?false/)
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          full_name: 'Test User',
+          email: 'test.user@example.com',
+          is_2fa_enabled: false,
+          is_donations_public: false,
+          email_notifications: true,
+          push_notifications: true,
+        }),
+      })
+      return
+    }
+  })
+
+  await page.goto('/settings')
+  await expect(page.getByRole('heading', { name: 'Privacy & Security Settings' })).toBeVisible()
+
+  const listingsToggle = page.getByRole('button', { name: 'Make food listings public' })
+  await listingsToggle.click()
+
+  await expect(listingsToggle).toHaveAttribute('aria-pressed', 'false')
+})
+
+test('ST8: analytics shows food saved and supports date/category filters', async ({ page }) => {
+  await setAuthState(page)
+
+  await page.route(`${API_BASE}/analytics/`, async (route) => {
+    const url = new URL(route.request().url())
+    const period = url.searchParams.get('period')
+    const category = url.searchParams.get('category')
+
+    expect(['all', '7d', '30d', '90d']).toContain(period)
+    expect(['', 'vegetables']).toContain(category)
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        total_items: 12,
+        items_used: 7,
+        total_donated: 4,
+        food_saved_from_waste: 11,
+        expiring_soon: 2,
+        weekly_trend: [{ week: '2026-08-01', count: 3 }],
+        items_logged_trend: [{ week: '2026-08-01', count: 5 }],
+        category_breakdown: [{ category: 'vegetables', count: 2 }],
+      }),
+    })
+  })
+
+  await page.goto('/analytics')
+
+  await expect(page.getByText('Food Saved From Waste')).toBeVisible()
+  await expect(page.getByText('11')).toBeVisible()
+  await page.locator('select').nth(0).selectOption('vegetables')
+  await page.locator('select').nth(1).selectOption('30d')
+
+  await expect(page.getByText('Number of Donations')).toBeVisible()
+})
+
+test('ST9: filter donations by category', async ({ page }) => {
   await setAuthState(page)
 
   await page.route(`${API_BASE}/donations/`, async (route) => {

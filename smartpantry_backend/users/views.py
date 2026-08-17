@@ -49,6 +49,14 @@ def login(request):
     if user is None:
         return Response({"error": "Invalid email or password"}, status=401)
 
+    if not user.is_2fa_enabled:
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "user": user_payload(user),
+        }, status=200)
+
     code, _token = user.generate_otp()
 
     send_mail(

@@ -14,21 +14,35 @@ class AnalyticsView(APIView):
 
     def get(self, request):
         category = request.query_params.get('category')
+        period = request.query_params.get('period', 'all')
 
-        total_items = FoodItem.objects.filter(user=request.user).count()
-        items_used = FoodItem.objects.filter(user=request.user, is_used=True).count()
+        now = timezone.now().date()
+        cutoff = None
+        if period == '7d':
+            cutoff = now - timedelta(days=7)
+        elif period == '30d':
+            cutoff = now - timedelta(days=30)
+        elif period == '90d':
+            cutoff = now - timedelta(days=90)
 
+        food_qs = FoodItem.objects.filter(user=request.user)
         donation_qs = Donation.objects.filter(donor=request.user)
+
         if category:
+            food_qs = food_qs.filter(category=category)
             donation_qs = donation_qs.filter(food_item__category=category)
 
-        total_donated = donation_qs.count()
+        if cutoff is not None:
+            food_qs = food_qs.filter(date_added__date__gte=cutoff)
+            donation_qs = donation_qs.filter(created_at__date__gte=cutoff)
 
-        soon = timezone.now().date() + timedelta(days=3)
-        expiring_soon = FoodItem.objects.filter(
-            user=request.user,
-            expiry_date__lte=soon
-        ).count()
+        total_items = food_qs.count()
+        items_used = food_qs.filter(is_used=True).count()
+        total_donated = donation_qs.count()
+        food_saved_from_waste = items_used + total_donated
+
+        soon = now + timedelta(days=3)
+        expiring_soon = food_qs.filter(expiry_date__lte=soon).count()
 
         weekly_qs = (
             donation_qs
@@ -42,9 +56,8 @@ class AnalyticsView(APIView):
             for entry in weekly_qs
         ]
 
-        # Items logged per week (general inventory activity, not just donations)
         items_logged_qs = (
-            FoodItem.objects.filter(user=request.user)
+            food_qs
             .annotate(week=TruncWeek('date_added'))
             .values('week')
             .annotate(count=Count('id'))
@@ -70,6 +83,7 @@ class AnalyticsView(APIView):
             'total_items': total_items,
             'items_used': items_used,
             'total_donated': total_donated,
+            'food_saved_from_waste': food_saved_from_waste,
             'expiring_soon': expiring_soon,
             'weekly_trend': weekly_trend,
             'items_logged_trend': items_logged_trend,

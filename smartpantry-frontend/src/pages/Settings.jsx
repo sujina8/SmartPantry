@@ -5,35 +5,42 @@ import Sidebar from "../components/Sidebar";
 export default function Settings() {
     const [settings, setSettings] = useState({});
 
-    const toggleSetting = (key) => {
-        setSettings((current) => ({
-            ...current,
-            [key]: !current[key],
-        }));
+    const saveSettings = async (nextSettings = settings) => {
+        try {
+            const data = new FormData();
+            Object.entries(nextSettings).forEach(([key, value]) => {
+                if (key === 'profile_picture' && typeof value === 'string') return;
+                if (value !== null && value !== undefined) {
+                    data.append(key, typeof value === 'boolean' ? String(value) : value);
+                }
+            });
+            await api.patch("/auth/settings/", data);
+            return true;
+        } catch (err) {
+            console.error(err);
+            alert("Could not save your privacy settings. Please try again.");
+            return false;
+        }
+    };
+
+    const toggleSetting = async (key) => {
+        const nextSettings = {
+            ...settings,
+            [key]: !settings[key],
+        };
+
+        setSettings(nextSettings);
+        await saveSettings(nextSettings);
     };
 
     useEffect(() => {
         api.get("/auth/settings/")
             .then((res) => setSettings(res.data))
-            .catch(console.error);
-    }, []);
-
-    const saveSettings = async () => {
-        try {
-            const data = new FormData();
-            Object.keys(settings).forEach((key) => {
-                const value = settings[key];
-                if (key === 'profile_picture' && typeof value === 'string') return;
-                if (value !== null && value !== undefined) {
-                    data.append(key, value);
-                }
+            .catch((err) => {
+                console.error(err);
+                alert("Unable to load your settings right now.");
             });
-            await api.patch("/auth/settings/", data);
-            alert("Settings updated successfully!");
-        } catch (err) {
-            console.error(err);
-        }
-    };
+    }, []);
 
     return (
         <div className="sp-donations">
@@ -147,7 +154,7 @@ export default function Settings() {
                     </div>
 
                     <div className="sp-settings-actions">
-                        <button className="sp-btn sp-btn-primary" onClick={saveSettings}>
+                        <button type="button" className="sp-btn sp-btn-primary" onClick={() => saveSettings()}>
                             Save Changes
                         </button>
                     </div>

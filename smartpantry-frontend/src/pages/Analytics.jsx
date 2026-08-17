@@ -35,15 +35,20 @@ export default function Analytics() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [periodFilter, setPeriodFilter] = useState('all')
 
   useEffect(() => {
     setLoading(true)
-    const query = categoryFilter ? `?category=${categoryFilter}` : ''
-    API.get(`/analytics/${query}`)
+    API.get('/analytics/', {
+      params: {
+        category: categoryFilter || undefined,
+        period: periodFilter,
+      },
+    })
       .then((res) => setData(res.data))
       .catch(() => setError('Failed to load analytics'))
       .finally(() => setLoading(false))
-  }, [categoryFilter])
+  }, [categoryFilter, periodFilter])
 
   if (loading) return <p style={{ padding: 48 }}>Loading analytics...</p>
 
@@ -53,7 +58,8 @@ export default function Analytics() {
   const hasAnyActivity =
     (data?.total_items ?? 0) > 0 ||
     (data?.total_donated ?? 0) > 0 ||
-    (data?.items_used ?? 0) > 0
+    (data?.items_used ?? 0) > 0 ||
+    (data?.food_saved_from_waste ?? 0) > 0
 
   const barData = {
     labels: weeklyTrend.map((w) => w.week),
@@ -119,29 +125,42 @@ export default function Analytics() {
               <section className="sp-dash-section">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
                   <h2 className="sp-dash-heading" style={{ margin: 0 }}>Summary</h2>
-                  <div className="sp-form-field" style={{ minWidth: 200, margin: 0 }}>
-                    <select
-                      value={categoryFilter}
-                      onChange={(e) => setCategoryFilter(e.target.value)}
-                    >
-                      <option value="">All Categories</option>
-                      {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
-                        <option key={key} value={key}>{label}</option>
-                      ))}
-                    </select>
+                  <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <div className="sp-form-field" style={{ minWidth: 180, margin: 0 }}>
+                      <select
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                      >
+                        <option value="">All Categories</option>
+                        {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+                          <option key={key} value={key}>{label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="sp-form-field" style={{ minWidth: 150, margin: 0 }}>
+                      <select
+                        value={periodFilter}
+                        onChange={(e) => setPeriodFilter(e.target.value)}
+                      >
+                        <option value="all">All time</option>
+                        <option value="7d">Last 7 days</option>
+                        <option value="30d">Last 30 days</option>
+                        <option value="90d">Last 90 days</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <div className="sp-stat-cards">
                   <div className="sp-stat-card">
-                    <p className="sp-stat-label">Items Tracked</p>
-                    <p className="sp-stat-value">{data?.total_items ?? 0}</p>
+                    <p className="sp-stat-label">Food Saved From Waste</p>
+                    <p className="sp-stat-value">{data?.food_saved_from_waste ?? 0}</p>
                   </div>
                   <div className="sp-stat-card">
                     <p className="sp-stat-label">Items Used</p>
                     <p className="sp-stat-value">{data?.items_used ?? 0}</p>
                   </div>
                   <div className="sp-stat-card">
-                    <p className="sp-stat-label">Total Donations</p>
+                    <p className="sp-stat-label">Number of Donations</p>
                     <p className="sp-stat-value">{data?.total_donated ?? 0}</p>
                   </div>
                   <div className="sp-stat-card">
